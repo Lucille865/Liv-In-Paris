@@ -6,40 +6,31 @@ using System.Threading.Tasks;
 
 namespace Pb_scientifique
 {
-    public class Noeud
+    public class Noeud<T>
+{
+    public T Valeur { get; }
+    public List<Noeud<T>> Voisins { get; }
+
+    public Noeud(T valeur)
     {
-        public int numero;
-        public List<Noeud> voisins;
+        Valeur = valeur;
+        Voisins = new List<Noeud<T>>();
+    }
 
-        public Noeud(int numero)
+    public void AjouterVoisin(Noeud<T> voisin)
+    {
+        if (!Voisins.Contains(voisin))
         {
-            this.numero = numero;
-            this.voisins = new List<Noeud>();
+            Voisins.Add(voisin);
+            voisin.Voisins.Add(this); // Graphe non orienté
         }
+    }
 
-        public int Numero
-        { get { return numero; } }
-
-        public List<Noeud> Voisins
-        { get { return voisins; } }
-
-        public void AjouterVoisins(Noeud voisin)
-        {
-            if (!Voisins.Contains(voisin))
-            {
-                Voisins.Add(voisin);
-            }
-        }
-
-        public string toString()
-        {
-            return Numero.ToString();
-        }
-
-        public List<Noeud> GetVoisins()
-        {
-            return voisins;
-        }
+    public string toString()
+    {
+        return Valeur.ToString();
+    }
+}
 
     }
 }
