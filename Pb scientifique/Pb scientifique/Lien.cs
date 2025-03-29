@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,23 +6,16 @@ using System.Threading.Tasks;
 
 namespace Pb_scientifique
 {
-    public class Lien
+    public class Lien<T> where T : notnull
     {
-        public Noeud Noeud1
-        {
-            get;
-        }
-        public Noeud Noeud2
-        {
-            get;
-        }
+        public Noeud<T> Noeud1 { get; }
+        public Noeud<T> Noeud2 { get; }
 
-        public Lien(Noeud noeud1, Noeud noeud2)
+        public Lien(Noeud<T> n1, Noeud<T> n2)
         {
-            Noeud1 = noeud1;
-            Noeud2 = noeud2;
+            Noeud1 = n1;
+            Noeud2 = n2;
 
-            Noeud1.AjouterVoisins(Noeud2);
         }
         public string toString()
         {

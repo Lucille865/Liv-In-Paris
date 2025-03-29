@@ -1,4 +1,4 @@
-using Pb_scientifique;
+﻿using Pb_scientifique;
 using System;
 using System.IO;
 
@@ -9,9 +9,9 @@ namespace Pb_scientifique
         static void Main(string[] args)
         {
             string cheminFichier = "soc-karate.mtx";
-            Graphe graphe = new Graphe();
-            AfficheGraphe image = new AfficheGraphe();
-            image.ChargerDepuisFichier(cheminFichier);
+            Graphe<int> graphe = new Graphe<int>();
+            AfficheGraphe<int> image = new AfficheGraphe<int>();
+            image.ChargerDepuisFichier(cheminFichier, int.Parse);
             LireRelationsDepuisFichier(cheminFichier, graphe);
 
             // Affichage des informations
@@ -23,7 +23,7 @@ namespace Pb_scientifique
             image.DessinerGraphe("graphe.png");
         }
 
-        static void LireRelationsDepuisFichier(string cheminFichier, Graphe graphe)
+        static void LireRelationsDepuisFichier(string cheminFichier, Graphe<int> graphe)
         {
             if (!File.Exists(cheminFichier))
             {
