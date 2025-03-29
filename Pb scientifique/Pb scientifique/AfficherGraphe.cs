@@ -1,14 +1,14 @@
-using Pb_scientifique;
+﻿using Pb_scientifique;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-public class AfficheGraphe
+public class AfficheGraphe<T> where T : notnull
 {
-    public List<Noeud> Noeuds { get; set; } = new List<Noeud>();
-    public List<Lien> Liens { get; set; } = new List<Lien>();
+    public List<Noeud<T>> Noeuds { get; set; } = new List<Noeud<T>>();
+    public List<Lien<T>> Liens { get; set; } = new List<Lien<T>>();
 
-    public void ChargerDepuisFichier(string cheminFichier)
+    public void ChargerDepuisFichier(string cheminFichier, Func<string, T> parseFunc)
     {
         try
         {
@@ -16,42 +16,46 @@ public class AfficheGraphe
             {
                 string ligne;
                 bool debutData = false;
+                var noeudDict = new Dictionary<T, Noeud<T>>();
 
                 while ((ligne = sr.ReadLine()) != null)
                 {
-                    // Ignorer les commentaires qui commencent par %%
                     if (ligne.StartsWith("%"))
                         continue;
 
-                    // Détecter la première ligne contenant le nombre de sommets et d’arêtes
                     if (!debutData)
                     {
-                        debutData = true; // On passe aux données
+                        debutData = true;
                         continue;
                     }
 
-                    // Lire les relations (chaque ligne = "id1 id2")
                     string[] parties = ligne.Split(' ');
                     if (parties.Length >= 2)
                     {
-                        int id1 = int.Parse(parties[0]);
-                        int id2 = int.Parse(parties[1]);
+                        T id1 = parseFunc(parties[0]);
+                        T id2 = parseFunc(parties[1]);
 
-                        // Ajouter les nœuds s'ils n'existent pas (en utilisant un dictionnaire)
-                        if (!Noeuds.Exists(n => n.Numero == id1))
-                            Noeuds.Add(new Noeud(id1));
+                        if (!noeudDict.ContainsKey(id1))
+                        {
+                            var noeud = new Noeud<T>(id1);
+                            noeudDict[id1] = noeud;
+                            Noeuds.Add(noeud);
+                        }
 
-                        if (!Noeuds.Exists(n => n.Numero == id2))
-                            Noeuds.Add(new Noeud(id2));
+                        if (!noeudDict.ContainsKey(id2))
+                        {
+                            var noeud = new Noeud<T>(id2);
+                            noeudDict[id2] = noeud;
+                            Noeuds.Add(noeud);
+                        }
 
-                        // Ajouter une relation entre les nœuds
-                        var noeud1 = Noeuds.First(n => n.Numero == id1);
-                        var noeud2 = Noeuds.First(n => n.Numero == id2);
-                        noeud1.AjouterVoisins(noeud2);
-                        noeud2.AjouterVoisins(noeud1); // Graphe non orienté
+                        var noeud1 = noeudDict[id1];
+                        var noeud2 = noeudDict[id2];
 
-                        // Ajouter le lien à la liste des liens
-                        Liens.Add(new Lien(noeud1, noeud2));
+                        noeud1.AjouterVoisin(noeud2);
+                        noeud2.AjouterVoisin(noeud1);
+
+                        Liens.Add(new Lien<T>(noeud1, noeud2));
                     }
                 }
             }
@@ -78,7 +82,7 @@ public class AfficheGraphe
         // Placer les nœuds en cercle
         int rayonCercle = 200;
         Point centre = new Point(largeur / 2, hauteur / 2);
-        Dictionary<Noeud, Point> positions = new Dictionary<Noeud, Point>();
+        Dictionary<Noeud<T>, Point> positions = new Dictionary<Noeud<T>, Point>();
 
         int totalNoeuds = Noeuds.Count;
         for (int i = 0; i < totalNoeuds; i++)
@@ -97,13 +101,17 @@ public class AfficheGraphe
             g.DrawLine(pen, p1, p2);
         }
 
-        // Dessiner les nœuds
+        // Dessiner les nœuds avec leurs numéros/noms
         foreach (var noeud in Noeuds)
         {
             Point pos = positions[noeud];
             g.FillEllipse(Brushes.LightBlue, pos.X - 20, pos.Y - 20, 40, 40);
             g.DrawEllipse(Pens.Black, pos.X - 20, pos.Y - 20, 40, 40);
-            g.DrawString(noeud.toString(), font, brush, pos.X - 10, pos.Y - 10);
+
+            // Afficher le numéro/le nom au centre du nœud
+            string texte = noeud.Valeur.ToString();
+            SizeF textSize = g.MeasureString(texte, font);
+            g.DrawString(texte, font, brush, pos.X - textSize.Width / 2, pos.Y - textSize.Height / 2);
         }
 
         // Sauvegarder l'image
