@@ -8,6 +8,11 @@ namespace Pb_scientifique
     {
         static void Main(string[] args)
         {
+            var interfaceApp = new Interface();
+
+            // Afficher le menu initial
+            interfaceApp.AfficherMenu();
+
             string cheminFichier = "soc-karate.mtx";
             Graphe<int> graphe = new Graphe<int>();
             AfficheGraphe<int> image = new AfficheGraphe<int>();
