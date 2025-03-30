@@ -10,7 +10,7 @@ namespace Pb_scientifique
 {
     public class Graphe<T>
     {
-        private Dictionary<T, Station> stations; // Associe l'ID d'une station à son objet Station
+        public Dictionary<T, Station> stations; // Associe l'ID d'une station à son objet Station
         private Dictionary<T, List<T>> liaisons; // Liste des connexions entre stations
         public List<Noeud<T>> Noeuds { get; set; } = new List<Noeud<T>>();
         public List<Lien<T>> Liens { get; set; } = new List<Lien<T>>();
@@ -106,10 +106,10 @@ namespace Pb_scientifique
                     }
                 }
             }
+
         }
 
-
-        public void ChargerLiaisonsDepuisFichier(string cheminFichier)
+    public void ChargerLiaisonsDepuisFichier(string cheminFichier)
         {
             if (!File.Exists(cheminFichier))
             {
@@ -152,6 +152,16 @@ namespace Pb_scientifique
                 }
             }
         }
+
+        public List<T> ObtenirVoisins(T id)
+        {
+            if (liaisons.ContainsKey(id))
+            {
+                return liaisons[id];
+            }
+            return new List<T>(); // Retourne une liste vide si aucun voisin trouvé
+        }
+
 
     }
     // Classe Station
