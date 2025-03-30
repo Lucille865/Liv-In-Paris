@@ -1,6 +1,7 @@
 ﻿using Pb_scientifique;
 using System;
 using System.IO;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Pb_scientifique
 {
@@ -51,15 +52,34 @@ namespace Pb_scientifique
             }
             image.DessinerGraphe("graphe.png");
 
-            Noeud<int> depart = graphe.Noeuds.ContainsKey(101) ? graphe.Noeuds[109] : null;
-            Noeud<int> arrivee = graphe.Noeuds.ContainsKey(203) ? graphe.Noeuds[203] : null; // Trouver le noeud d'arrivée (ID 203)
+            Noeud<int> depart = graphe.Noeuds.ContainsKey(121) ? graphe.Noeuds[121] : null;
+            Noeud<int> arrivee = graphe.Noeuds.ContainsKey(124) ? graphe.Noeuds[124] : null; // Trouver le noeud d'arrivée (ID 203)
             var dijkstra = new Dijkstra<int>(graphe, depart.Id);
             var chemin = dijkstra.GetChemin(arrivee.Id);
 
-            Console.WriteLine("Chemin le plus court trouvé entre " + depart.Nom + " et "+arrivee.Nom+" :");
-            foreach (var stationId in chemin)
+            /*Console.WriteLine("Vérification des distances calculées par Dijkstra :");
+            foreach (var kvp in dijkstra.Distances)
             {
-                Console.WriteLine($"Station {stationId}");
+                if (graphe.Noeuds.TryGetValue(kvp.Key, out var station))
+                {
+                    Console.WriteLine($"Station {station.Nom} ({station.Id}) - Distance: {kvp.Value}");
+                }
+            }*/
+
+            Console.WriteLine("Chemin le plus court trouvé entre " + depart.Nom + " et " + arrivee.Nom + " :");
+
+            foreach (var stationNom in chemin)
+            {
+                var stationTrouvee = graphe.Noeuds.Values.FirstOrDefault(s => s.Nom == stationNom);
+
+                if (stationTrouvee != null)
+                {
+                    Console.WriteLine($"- {stationTrouvee.Nom} (Ligne {stationTrouvee.Ligne})");
+                }
+                else
+                {
+                    Console.WriteLine($"Station introuvable : {stationNom}");
+                }
             }
 
 
