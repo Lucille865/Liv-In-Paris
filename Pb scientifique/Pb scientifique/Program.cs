@@ -51,12 +51,12 @@ namespace Pb_scientifique
             }
             image.DessinerGraphe("graphe.png");
 
-            Noeud<int> depart = graphe.Noeuds.FirstOrDefault(n => n.Id.Equals(101));  // Trouver le noeud de départ (ID 101)
-            Noeud<int> arrivee = graphe.Noeuds.FirstOrDefault(n => n.Id.Equals(203));  // Trouver le noeud d'arrivée (ID 203)
+            Noeud<int> depart = graphe.Noeuds.ContainsKey(101) ? graphe.Noeuds[109] : null;
+            Noeud<int> arrivee = graphe.Noeuds.ContainsKey(203) ? graphe.Noeuds[203] : null; // Trouver le noeud d'arrivée (ID 203)
             var dijkstra = new Dijkstra<int>(graphe, depart.Id);
             var chemin = dijkstra.GetChemin(arrivee.Id);
 
-            Console.WriteLine("Chemin le plus court trouvé :");
+            Console.WriteLine("Chemin le plus court trouvé entre " + depart.Nom + " et "+arrivee.Nom+" :");
             foreach (var stationId in chemin)
             {
                 Console.WriteLine($"Station {stationId}");

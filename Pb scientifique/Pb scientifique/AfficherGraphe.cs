@@ -50,7 +50,7 @@ public class AfficheGraphe<T> where T : notnull
 
                             if (!noeudDict.ContainsKey(id1))
                             {
-                                var noeud = new Noeud<T>(id1, longitude, latitude);
+                                var noeud = new Noeud<T>(id1, ligne, nomStation, longitude, latitude);
                                 noeud.Latitude = latitude;
                                 noeud.Longitude = longitude;
                                 noeudDict[id1] = noeud;

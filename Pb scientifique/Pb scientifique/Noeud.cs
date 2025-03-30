@@ -9,15 +9,17 @@ namespace Pb_scientifique
     public class Noeud<T>
     {
         public T Id { get; set; }
-        //public string Nom { get; set; }
+        public string Ligne { get; set; }
+        public string Nom { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
         public List<Noeud<T>> Voisins { get; set; } = new List<Noeud<T>>();
 
-        public Noeud(T id, /*string nom,*/ double longitude, double latitude)
+        public Noeud(T id, string ligne, string nom, double longitude, double latitude)
         {
             Id = id;
-            //Nom = nom;
+            Ligne = ligne;
+            Nom = nom;
             Longitude = longitude;
             Latitude = latitude;
         }
@@ -30,7 +32,7 @@ namespace Pb_scientifique
 
         public string toString()
         {
-            return Id.ToString();
+            return Nom;
         }
     }
 }

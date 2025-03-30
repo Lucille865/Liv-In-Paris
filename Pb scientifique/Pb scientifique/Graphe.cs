@@ -10,25 +10,25 @@ namespace Pb_scientifique
 {
     public class Graphe<T>
     {
-        public Dictionary<T, Station> stations; // Associe l'ID d'une station à son objet Station
-        private Dictionary<T, List<T>> liaisons; // Liste des connexions entre stations
-        public List<Noeud<T>> Noeuds { get; set; } = new List<Noeud<T>>();
+        public Dictionary<T, Noeud<T>> Noeuds { get; }  // Associe l'ID d'une station à son objet Station
+        public Dictionary<T, List<T>> liaisons; // Liste des connexions entre stations
+        //public List<Noeud<T>> Noeuds { get; set; } = new List<Noeud<T>>();
         public List<Lien<T>> Liens { get; set; } = new List<Lien<T>>();
 
         public Graphe()
         {
-            stations = new Dictionary<T, Station>();
+            Noeuds = new Dictionary<T, Noeud<T>>();
             liaisons = new Dictionary<T, List<T>>();
         }
 
-        public void AjouterStation(T id, string nom, double longitude, double latitude)
+        public void AjouterStation(T id, string ligne, string nom, double longitude, double latitude)
         {
-            if (!stations.ContainsKey(id))
+            if (!Noeuds.ContainsKey(id))
             {
-                stations[id] = new Station(Convert.ToInt32(id), nom, longitude, latitude);
+                Noeuds[id] = new Noeud<T>(id, ligne, nom, longitude, latitude);
 
                 // Ajouter le noeud correspondant
-                Noeuds.Add(new Noeud<T>(id, longitude, latitude));
+                //Noeuds.Add(new Noeud<T>(id, nom, longitude, latitude));
             }
         }
 
@@ -55,7 +55,7 @@ namespace Pb_scientifique
 
         public void AfficherStations()
         {
-            foreach (var station in stations.Values)
+            foreach (var station in Noeuds.Values)
             {
                 Console.WriteLine($"ID: {station.Id}, Nom: {station.Nom}, Coords: ({station.Longitude}, {station.Latitude})");
             }
@@ -86,6 +86,7 @@ namespace Pb_scientifique
                     // Convertir ID station (idStation est un entier)
                     if (int.TryParse(elements[0], out int idStation))
                     {
+                        string ligneMetro = elements[1];
                         string nomStation = elements[2];
 
                         // Séparation des coordonnées (longitude et latitude)
@@ -93,7 +94,7 @@ namespace Pb_scientifique
                             double.TryParse(elements[4], NumberStyles.Any, CultureInfo.InvariantCulture, out double latitude))
                         {
                             // Ajouter la station au graphe
-                            AjouterStation((T)(object)idStation, nomStation, longitude, latitude);
+                            AjouterStation((T)(object)idStation, ligneMetro, nomStation, longitude, latitude);
                         }
                         else
                         {
@@ -163,21 +164,5 @@ namespace Pb_scientifique
         }
 
 
-    }
-    // Classe Station
-    public class Station
-    {
-        public int Id { get; }
-        public string Nom { get; }
-        public double Longitude { get; }
-        public double Latitude { get; }
-
-        public Station(int id, string nom, double longitude, double latitude)
-        {
-            Id = id;
-            Nom = nom;
-            Longitude = longitude;
-            Latitude = latitude;
-        }
     }
 }
