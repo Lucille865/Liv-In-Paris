@@ -8,27 +8,29 @@ namespace Pb_scientifique
 {
     public class Noeud<T>
     {
-        public T Valeur { get; }
-        public List<Noeud<T>> Voisins { get; }
+        public T Id { get; set; }
+        //public string Nom { get; set; }
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
+        public List<Noeud<T>> Voisins { get; set; } = new List<Noeud<T>>();
 
-        public Noeud(T valeur)
+        public Noeud(T id, /*string nom,*/ double longitude, double latitude)
         {
-            Valeur = valeur;
-            Voisins = new List<Noeud<T>>();
+            Id = id;
+            //Nom = nom;
+            Longitude = longitude;
+            Latitude = latitude;
         }
 
         public void AjouterVoisin(Noeud<T> voisin)
         {
             if (!Voisins.Contains(voisin))
-            {
                 Voisins.Add(voisin);
-                voisin.Voisins.Add(this); // Graphe non orienté
-            }
         }
 
         public string toString()
         {
-            return Valeur.ToString();
+            return Id.ToString();
         }
     }
 }

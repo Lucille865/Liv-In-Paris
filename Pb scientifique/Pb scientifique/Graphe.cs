@@ -1,92 +1,173 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Pb_scientifique
 {
     public class Graphe<T>
     {
-        private Dictionary<T, List<T>> listeAdjacence;
+        private Dictionary<T, Station> stations; // Associe l'ID d'une station à son objet Station
+        private Dictionary<T, List<T>> liaisons; // Liste des connexions entre stations
+        public List<Noeud<T>> Noeuds { get; set; } = new List<Noeud<T>>();
+        public List<Lien<T>> Liens { get; set; } = new List<Lien<T>>();
 
         public Graphe()
         {
-            listeAdjacence = new Dictionary<T, List<T>>();
+            stations = new Dictionary<T, Station>();
+            liaisons = new Dictionary<T, List<T>>();
         }
 
-        public void AjouterLien(T val1, T val2)
+        public void AjouterStation(T id, string nom, double longitude, double latitude)
         {
-            if (!listeAdjacence.ContainsKey(val1))
-                listeAdjacence[val1] = new List<T>();
-            if (!listeAdjacence.ContainsKey(val2))
-                listeAdjacence[val2] = new List<T>();
-
-            listeAdjacence[val1].Add(val2);
-            listeAdjacence[val2].Add(val1);
-        }
-
-        public void AfficherListeAdjacence()
-        {
-            foreach (var noeud in listeAdjacence)
+            if (!stations.ContainsKey(id))
             {
-                Console.Write(noeud.Key + " -> ");
-                Console.WriteLine(string.Join(", ", noeud.Value));
+                stations[id] = new Station(Convert.ToInt32(id), nom, longitude, latitude);
+
+                // Ajouter le noeud correspondant
+                Noeuds.Add(new Noeud<T>(id, longitude, latitude));
             }
         }
 
-        private void ExplorerEnProfondeur(T noeud, HashSet<T> visites, List<T> ordreVisite)
+        public void AjouterLiaison(T id1, T id2)
         {
-            visites.Add(noeud);
-            ordreVisite.Add(noeud);
-
-            foreach (var voisin in listeAdjacence[noeud])
+            if (!liaisons.ContainsKey(id1))
             {
-                if (!visites.Contains(voisin))
-                    ExplorerEnProfondeur(voisin, visites, ordreVisite);
+                liaisons[id1] = new List<T>();
+            }
+            if (!liaisons.ContainsKey(id2))
+            {
+                liaisons[id2] = new List<T>();
+            }
+
+            if (!liaisons[id1].Contains(id2))
+            {
+                liaisons[id1].Add(id2);
+            }
+            if (!liaisons[id2].Contains(id1))
+            {
+                liaisons[id2].Add(id1);
             }
         }
 
-        public bool EstConnexe()
+        public void AfficherStations()
         {
-            if (listeAdjacence.Count == 0) return false;
-
-            HashSet<T> visites = new HashSet<T>();
-            T premierNoeud = listeAdjacence.Keys.First();
-
-            ExplorerEnProfondeur(premierNoeud, visites, new List<T>());
-
-            return visites.Count == listeAdjacence.Count;
+            foreach (var station in stations.Values)
+            {
+                Console.WriteLine($"ID: {station.Id}, Nom: {station.Nom}, Coords: ({station.Longitude}, {station.Latitude})");
+            }
         }
 
-        public bool ContientCycle()
+        public void AfficherLiaisons()
         {
-            HashSet<T> visites = new HashSet<T>();
-            foreach (var noeud in listeAdjacence.Keys)
+            foreach (var liaison in liaisons)
             {
-                if (!visites.Contains(noeud))
+                Console.WriteLine($"Station {liaison.Key} est connectée à : {string.Join(", ", liaison.Value)}");
+            }
+        }
+
+        public void ChargerStationsDepuisFichier(string cheminStations)
+        {
+            if (!File.Exists(cheminStations))
+            {
+                Console.WriteLine("Fichier de stations introuvable !");
+                return;
+            }
+
+            string[] lignes = File.ReadAllLines(cheminStations);
+            foreach (string ligne in lignes.Skip(1)) // Ignore l'en-tête
+            {
+                var elements = ligne.Split(';');
+                if (elements.Length >= 7)  // Vérifie le format attendu
                 {
-                    if (ExplorerCycle(noeud, default(T), visites)) return true;
+                    // Convertir ID station (idStation est un entier)
+                    if (int.TryParse(elements[0], out int idStation))
+                    {
+                        string nomStation = elements[2];
+
+                        // Séparation des coordonnées (longitude et latitude)
+                        if (double.TryParse(elements[3], NumberStyles.Any, CultureInfo.InvariantCulture, out double longitude) &&
+                            double.TryParse(elements[4], NumberStyles.Any, CultureInfo.InvariantCulture, out double latitude))
+                        {
+                            // Ajouter la station au graphe
+                            AjouterStation((T)(object)idStation, nomStation, longitude, latitude);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Erreur de conversion pour la station {nomStation}: {elements[3]} / {elements[4]}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Erreur de format ID pour la ligne: {ligne}");
+                    }
                 }
             }
-            return false;
         }
 
-        private bool ExplorerCycle(T noeud, T parent, HashSet<T> visites)
+
+        public void ChargerLiaisonsDepuisFichier(string cheminFichier)
         {
-            visites.Add(noeud);
-            foreach (var voisin in listeAdjacence[noeud])
+            if (!File.Exists(cheminFichier))
             {
-                if (!visites.Contains(voisin))
+                Console.WriteLine("Fichier de liaisons introuvable !");
+                return;
+            }
+
+            string[] lignes = File.ReadAllLines(cheminFichier);
+            foreach (string ligne in lignes.Skip(1)) // Ignore l'en-tête
+            {
+                var elements = ligne.Split(';');
+
+                if (elements.Length >= 6) // Vérifie qu'il y a bien 6 éléments dans la ligne
                 {
-                    if (ExplorerCycle(voisin, noeud, visites)) return true;
-                }
-                else if (!voisin.Equals(parent))
-                {
-                    return true;
+                    if (int.TryParse(elements[0], out int idStation1) && int.TryParse(elements[3], out int idStation2))
+                    {
+                        // Conversion explicite d'idStation1 et idStation2 de int vers T
+                        T station1 = (T)Convert.ChangeType(idStation1, typeof(T));
+                        T station2 = (T)Convert.ChangeType(idStation2, typeof(T));
+
+                        // Vérifier si les champs Précédent et Suivant sont vides ou non
+                        if (!string.IsNullOrEmpty(elements[2]) && int.TryParse(elements[2], out int precedentId))
+                        {
+                            T precedentStation = (T)Convert.ChangeType(precedentId, typeof(T));
+                            AjouterLiaison(precedentStation, station1);
+                        }
+                        if (!string.IsNullOrEmpty(elements[4]) && int.TryParse(elements[4], out int suivantId))
+                        {
+                            T suivantStation = (T)Convert.ChangeType(suivantId, typeof(T));
+                            AjouterLiaison(station1, suivantStation);
+                        }
+
+                        // Ajouter la liaison entre Station1 et Station2
+                        AjouterLiaison(station1, station2);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Erreur de format pour la ligne: {ligne}");
+                    }
                 }
             }
-            return false;
+        }
+
+    }
+    // Classe Station
+    public class Station
+    {
+        public int Id { get; }
+        public string Nom { get; }
+        public double Longitude { get; }
+        public double Latitude { get; }
+
+        public Station(int id, string nom, double longitude, double latitude)
+        {
+            Id = id;
+            Nom = nom;
+            Longitude = longitude;
+            Latitude = latitude;
         }
     }
 }

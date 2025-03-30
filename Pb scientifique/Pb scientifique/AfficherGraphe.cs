@@ -1,7 +1,9 @@
 ﻿using Pb_scientifique;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 
 public class AfficheGraphe<T> where T : notnull
 {
@@ -20,6 +22,9 @@ public class AfficheGraphe<T> where T : notnull
 
                 while ((ligne = sr.ReadLine()) != null)
                 {
+                    // Affichage des lignes lues pour débogage
+                    Console.WriteLine($"Ligne lue: {ligne}");
+
                     if (ligne.StartsWith("%"))
                         continue;
 
@@ -29,33 +34,33 @@ public class AfficheGraphe<T> where T : notnull
                         continue;
                     }
 
-                    string[] parties = ligne.Split(' ');
-                    if (parties.Length >= 2)
+                    string[] parties = ligne.Split(';');
+                    Console.WriteLine("Ligne lue : " + ligne);
+                    if (parties.Length >= 5)  // Ajusté pour 5 éléments dans ton format
                     {
-                        T id1 = parseFunc(parties[0]);
-                        T id2 = parseFunc(parties[1]);
-
-                        if (!noeudDict.ContainsKey(id1))
+                        try
                         {
-                            var noeud = new Noeud<T>(id1);
-                            noeudDict[id1] = noeud;
-                            Noeuds.Add(noeud);
-                        }
+                            T id1 = parseFunc(parties[0]);
+                            string nomStation = parties[1];
+                            double longitude = double.Parse(parties[3]);
+                            double latitude = double.Parse(parties[4]);
 
-                        if (!noeudDict.ContainsKey(id2))
+                            // Ajout d'un message de débogage pour chaque station
+                            Console.WriteLine($"Station lue: {nomStation} - ID: {id1}, Latitude: {latitude}, Longitude: {longitude}");
+
+                            if (!noeudDict.ContainsKey(id1))
+                            {
+                                var noeud = new Noeud<T>(id1, longitude, latitude);
+                                noeud.Latitude = latitude;
+                                noeud.Longitude = longitude;
+                                noeudDict[id1] = noeud;
+                                Noeuds.Add(noeud);  // Ajouter à la liste Noeuds
+                            }
+                        }
+                        catch (Exception ex)
                         {
-                            var noeud = new Noeud<T>(id2);
-                            noeudDict[id2] = noeud;
-                            Noeuds.Add(noeud);
+                            Console.WriteLine($"Erreur lors de l'ajout de la station : {ex.Message}");
                         }
-
-                        var noeud1 = noeudDict[id1];
-                        var noeud2 = noeudDict[id2];
-
-                        noeud1.AjouterVoisin(noeud2);
-                        noeud2.AjouterVoisin(noeud1);
-
-                        Liens.Add(new Lien<T>(noeud1, noeud2));
                     }
                 }
             }
@@ -64,59 +69,53 @@ public class AfficheGraphe<T> where T : notnull
         {
             Console.WriteLine("Erreur lors de la lecture du fichier : " + ex.Message);
         }
+        Console.WriteLine($"Nombre de stations chargées : {Noeuds.Count}");
+        foreach (var noeud in Noeuds)
+        {
+            Console.WriteLine($"Station ID: {noeud.Id}, Latitude: {noeud.Latitude}, Longitude: {noeud.Longitude}");
+        }
+
     }
+
 
     public void DessinerGraphe(string cheminFichier)
     {
-        int largeur = 800;
-        int hauteur = 600;
+        int largeur = 800, hauteur = 600;
         Bitmap bmp = new Bitmap(largeur, hauteur);
         Graphics g = Graphics.FromImage(bmp);
         g.Clear(Color.White);
 
-        // Définir une police et des pinceaux
-        Font font = new Font("Arial", 12);
+        // Déterminer les min/max pour normaliser les coordonnées
+        double minLong = double.MaxValue, maxLong = double.MinValue;
+        double minLat = double.MaxValue, maxLat = double.MinValue;
+
+        foreach (var n in Noeuds)
+        {
+            minLong = Math.Min(minLong, n.Longitude);
+            maxLong = Math.Max(maxLong, n.Longitude);
+            minLat = Math.Min(minLat, n.Latitude);
+            maxLat = Math.Max(maxLat, n.Latitude);
+        }
+
+        double echelleX = (largeur - 50) / (maxLong - minLong);
+        double echelleY = (hauteur - 50) / (maxLat - minLat);
+
+        Font font = new Font("Arial", 8);
         Brush brush = Brushes.Black;
-        Pen pen = new Pen(Color.Black, 2);
 
-        // Placer les nœuds en cercle
-        int rayonCercle = 200;
-        Point centre = new Point(largeur / 2, hauteur / 2);
-        Dictionary<Noeud<T>, Point> positions = new Dictionary<Noeud<T>, Point>();
-
-        int totalNoeuds = Noeuds.Count;
-        for (int i = 0; i < totalNoeuds; i++)
+        // Dessiner les stations
+        foreach (var n in Noeuds)
         {
-            double angle = i * (2 * Math.PI / totalNoeuds);
-            int x = centre.X + (int)(rayonCercle * Math.Cos(angle));
-            int y = centre.Y + (int)(rayonCercle * Math.Sin(angle));
-            positions[Noeuds[i]] = new Point(x, y);
+            int x = (int)((n.Longitude - minLong) * echelleX) + 25;
+            int y = hauteur - (int)((n.Latitude - minLat) * echelleY) - 25;
+
+            g.FillEllipse(Brushes.LightBlue, x - 3, y - 3, 6, 6);
+            g.DrawEllipse(Pens.Black, x - 3, y - 3, 6, 6);
+            g.DrawString(n.Id.ToString(), font, brush, x + 5, y + 5);
         }
 
-        // Dessiner les liens
-        foreach (var lien in Liens)
-        {
-            Point p1 = positions[lien.Noeud1];
-            Point p2 = positions[lien.Noeud2];
-            g.DrawLine(pen, p1, p2);
-        }
-
-        // Dessiner les nœuds avec leurs numéros/noms
-        foreach (var noeud in Noeuds)
-        {
-            Point pos = positions[noeud];
-            g.FillEllipse(Brushes.LightBlue, pos.X - 20, pos.Y - 20, 40, 40);
-            g.DrawEllipse(Pens.Black, pos.X - 20, pos.Y - 20, 40, 40);
-
-            // Afficher le numéro/le nom au centre du nœud
-            string texte = noeud.Valeur.ToString();
-            SizeF textSize = g.MeasureString(texte, font);
-            g.DrawString(texte, font, brush, pos.X - textSize.Width / 2, pos.Y - textSize.Height / 2);
-        }
-
-        // Sauvegarder l'image
         bmp.Save(cheminFichier);
-        Console.WriteLine($"Image sauvegardée à {cheminFichier}");
+        Console.WriteLine($"Graphe sauvegardé à {cheminFichier}");
     }
 }
 

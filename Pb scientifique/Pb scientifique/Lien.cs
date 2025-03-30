@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pb_scientifique
 {
-    public class Lien<T> where T : notnull
+    public class Lien<T>
     {
         public Noeud<T> Noeud1 { get; }
         public Noeud<T> Noeud2 { get; }
