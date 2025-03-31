@@ -15,7 +15,6 @@ namespace Pb_scientifique
         public string Identifiant { get; set; }
         public string MotDePasse { get; set; }
         public string TypeClient { get; set; } // "Particulier" ou "Entreprise"
-
         public string Prenom { get; set; } // Seulement pour les clients particuliers
         public string NomEntreprise { get; set; } // Seulement pour les entreprises
         public string Referent { get; set; } // Seulement pour les entreprises
