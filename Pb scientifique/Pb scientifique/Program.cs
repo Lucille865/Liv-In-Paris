@@ -109,7 +109,30 @@ namespace Pb_scientifique
             {
                 Console.WriteLine("Impossible de calculer le plus court chemin à cause d'un cycle de poids négatif.");
             }
+            
 
+            /*Floyd Warshall
+            var floydWarshall = new FloydWarshall<int>(graphe);
+            floydWarshall.CalculerPlusCourtsChemins();
+
+            var chemin = floydWarshall.GetChemin(depart.Id, arrivee.Id);
+
+            if (chemin.Count > 0)
+            {
+                Console.WriteLine("Chemin le plus court trouvé avec Floyd-Warshall entre " + depart.Nom + " et " + arrivee.Nom + " :");
+                foreach (var stationId in chemin)
+                {
+                    if (graphe.Noeuds.TryGetValue(stationId, out var station))
+                    {
+                        Console.WriteLine($"- {station.Nom} (Ligne {station.Ligne})");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Aucun chemin trouvé.");
+            }
+            */
 
         }
     }
