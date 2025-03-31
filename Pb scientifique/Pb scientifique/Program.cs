@@ -1,6 +1,7 @@
 ﻿using Pb_scientifique;
 using System;
 using System.IO;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Pb_scientifique
 {
@@ -11,41 +12,128 @@ namespace Pb_scientifique
             var interfaceApp = new Interface();
 
             // Afficher le menu initial
-            interfaceApp.AfficherMenu();
+            //interfaceApp.AfficherMenu();
 
-            string cheminFichier = "soc-karate.mtx";
+
+            string cheminStations = "MetroParisNoeuds.txt";
+            string cheminLiaisons = "MetroParisArcs.txt";
+
+            // Création d'un graphe avec des int comme identifiants de stations
             Graphe<int> graphe = new Graphe<int>();
-            AfficheGraphe<int> image = new AfficheGraphe<int>();
-            image.ChargerDepuisFichier(cheminFichier, int.Parse);
-            LireRelationsDepuisFichier(cheminFichier, graphe);
+            //AfficheGraphe<int> image = new AfficheGraphe<int>();
+            //image.ChargerDepuisFichier(cheminStations, int.Parse);
+
+            // Chargement des stations depuis le fichier
+            graphe.ChargerStationsDepuisFichier(cheminStations);
+            Console.WriteLine("Liste des stations chargées :");
+            
+
+
+            // Chargement des liaisons entre les stations depuis le fichier
+            graphe.ChargerLiaisonsDepuisFichier(cheminLiaisons);
+
 
             // Affichage des informations
-            graphe.AfficherListeAdjacence();
-            Console.WriteLine("Le graphe est-il connexe ? " + (graphe.EstConnexe() ? "Oui" : "Non"));
-            Console.WriteLine("Le graphe contient-il des cycles ? " + (graphe.ContientCycle() ? "Oui" : "Non"));
+            graphe.AfficherLiaisons();
+
 
             // Dessiner le graphe
-            image.DessinerGraphe("graphe.png");
-        }
+            //image.DessinerGraphe("graphe.png");
+            
+            var image = new AfficheGraphe<string>();
+            graphe.ChargerStationsDepuisFichier(cheminStations);
+            //graphe.ChargerLiaisonsDepuisFichier(cheminLiaisons);
+            Console.WriteLine($"Nombre de stations chargées : {graphe.Noeuds.Count}");
 
-        static void LireRelationsDepuisFichier(string cheminFichier, Graphe<int> graphe)
-        {
-            if (!File.Exists(cheminFichier))
+            // Afficher les informations des stations
+            foreach (var noeud in image.Noeuds)
             {
-                Console.WriteLine("Fichier introuvable !");
-                return;
+                Console.WriteLine($"Station ID: {noeud.Id}, Latitude: {noeud.Latitude}, Longitude: {noeud.Longitude}");
             }
+            image.DessinerGraphe("graphe.png");
 
-            string[] lignes = File.ReadAllLines(cheminFichier);
 
-            foreach (string ligne in lignes)
+            
+
+            Noeud<int> depart = graphe.Noeuds.ContainsKey(109) ? graphe.Noeuds[109] : null;
+            Noeud<int> arrivee = graphe.Noeuds.ContainsKey(124) ? graphe.Noeuds[124] : null; // Trouver le noeud d'arrivée (ID 203)
+
+            /*Djikista
+            var dijkstra = new Dijkstra<int>(graphe, depart.Id);
+            var chemin = dijkstra.GetChemin(arrivee.Id);
+
+            //Console.WriteLine("Vérification des distances calculées par Dijkstra :");
+            //foreach (var kvp in dijkstra.Distances)
+            //{
+            //    if (graphe.Noeuds.TryGetValue(kvp.Key, out var station))
+            //    {
+            //        Console.WriteLine($"Station {station.Nom} ({station.Id}) - Distance: {kvp.Value}");
+            //    }
+            //}
+
+            Console.WriteLine("Chemin le plus court trouvé entre " + depart.Nom + " et " + arrivee.Nom + " :");
+
+            foreach (var stationNom in chemin)
             {
-                string[] elements = ligne.Split(' ');
-                if (elements.Length == 2 && int.TryParse(elements[0], out int num1) && int.TryParse(elements[1], out int num2))
+                var stationTrouvee = graphe.Noeuds.Values.FirstOrDefault(s => s.Nom == stationNom);
+
+                if (stationTrouvee != null)
                 {
-                    graphe.AjouterLien(num1, num2);
+                    Console.WriteLine($"- {stationTrouvee.Nom} (Ligne {stationTrouvee.Ligne})");
+                }
+                else
+                {
+                    Console.WriteLine($"Station introuvable : {stationNom}");
                 }
             }
+            */
+
+            //Bellman Ford
+            var bellmanFord = new BellmanFord<int>(graphe);
+            bool succes = bellmanFord.CalculerPlusCourtChemin(depart.Id);
+
+            if (succes)
+            {
+                var chemin = bellmanFord.GetChemin(arrivee.Id);
+                Console.WriteLine("Chemin le plus court trouvé avec Bellman-Ford entre " + depart.Nom + " et " + arrivee.Nom + " :");
+
+                foreach (var stationId in chemin)
+                {
+                    if (graphe.Noeuds.TryGetValue(stationId, out var station))
+                    {
+                        Console.WriteLine($"- {station.Nom} (Ligne {station.Ligne})");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Impossible de calculer le plus court chemin à cause d'un cycle de poids négatif.");
+            }
+            
+
+            /*Floyd Warshall
+            var floydWarshall = new FloydWarshall<int>(graphe);
+            floydWarshall.CalculerPlusCourtsChemins();
+
+            var chemin = floydWarshall.GetChemin(depart.Id, arrivee.Id);
+
+            if (chemin.Count > 0)
+            {
+                Console.WriteLine("Chemin le plus court trouvé avec Floyd-Warshall entre " + depart.Nom + " et " + arrivee.Nom + " :");
+                foreach (var stationId in chemin)
+                {
+                    if (graphe.Noeuds.TryGetValue(stationId, out var station))
+                    {
+                        Console.WriteLine($"- {station.Nom} (Ligne {station.Ligne})");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Aucun chemin trouvé.");
+            }
+            */
+
         }
     }
 }

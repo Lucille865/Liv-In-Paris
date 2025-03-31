@@ -1,92 +1,101 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Pb_scientifique
 {
     public class Graphe<T>
     {
-        private Dictionary<T, List<T>> listeAdjacence;
+        public Dictionary<T, Noeud<T>> Noeuds { get; } = new();
+        private Dictionary<T, List<T>> liaisons = new();
 
-        public Graphe()
+        public void AjouterStation(T id, string ligne, string nom, double longitude, double latitude)
         {
-            listeAdjacence = new Dictionary<T, List<T>>();
-        }
-
-        public void AjouterLien(T val1, T val2)
-        {
-            if (!listeAdjacence.ContainsKey(val1))
-                listeAdjacence[val1] = new List<T>();
-            if (!listeAdjacence.ContainsKey(val2))
-                listeAdjacence[val2] = new List<T>();
-
-            listeAdjacence[val1].Add(val2);
-            listeAdjacence[val2].Add(val1);
-        }
-
-        public void AfficherListeAdjacence()
-        {
-            foreach (var noeud in listeAdjacence)
+            if (!Noeuds.ContainsKey(id))
             {
-                Console.Write(noeud.Key + " -> ");
-                Console.WriteLine(string.Join(", ", noeud.Value));
+                Noeuds[id] = new Noeud<T>(id, ligne, nom, longitude, latitude);
+                liaisons[id] = new List<T>(); // Initialiser la liste des voisins
             }
         }
 
-        private void ExplorerEnProfondeur(T noeud, HashSet<T> visites, List<T> ordreVisite)
+        public void AjouterLiaison(T id1, T id2)
         {
-            visites.Add(noeud);
-            ordreVisite.Add(noeud);
+            if (!Noeuds.ContainsKey(id1) || !Noeuds.ContainsKey(id2))
+                return; // Vérification pour éviter des erreurs
 
-            foreach (var voisin in listeAdjacence[noeud])
+            if (!liaisons[id1].Contains(id2))
+                liaisons[id1].Add(id2);
+
+            if (!liaisons[id2].Contains(id1))
+                liaisons[id2].Add(id1);
+        }
+
+        public void ChargerStationsDepuisFichier(string cheminStations)
+        {
+            if (!File.Exists(cheminStations))
             {
-                if (!visites.Contains(voisin))
-                    ExplorerEnProfondeur(voisin, visites, ordreVisite);
+                Console.WriteLine("Fichier de stations introuvable !");
+                return;
             }
-        }
 
-        public bool EstConnexe()
-        {
-            if (listeAdjacence.Count == 0) return false;
-
-            HashSet<T> visites = new HashSet<T>();
-            T premierNoeud = listeAdjacence.Keys.First();
-
-            ExplorerEnProfondeur(premierNoeud, visites, new List<T>());
-
-            return visites.Count == listeAdjacence.Count;
-        }
-
-        public bool ContientCycle()
-        {
-            HashSet<T> visites = new HashSet<T>();
-            foreach (var noeud in listeAdjacence.Keys)
+            foreach (string ligne in File.ReadLines(cheminStations).Skip(1))
             {
-                if (!visites.Contains(noeud))
+                var elements = ligne.Split(';');
+                if (elements.Length >= 5 && int.TryParse(elements[0], out int idStation) &&
+                    double.TryParse(elements[3], NumberStyles.Any, CultureInfo.InvariantCulture, out double longitude) &&
+                    double.TryParse(elements[4], NumberStyles.Any, CultureInfo.InvariantCulture, out double latitude))
                 {
-                    if (ExplorerCycle(noeud, default(T), visites)) return true;
+                    AjouterStation((T)(object)idStation, elements[1], elements[2], longitude, latitude);
                 }
             }
-            return false;
         }
 
-        private bool ExplorerCycle(T noeud, T parent, HashSet<T> visites)
+        public void ChargerLiaisonsDepuisFichier(string cheminFichier)
         {
-            visites.Add(noeud);
-            foreach (var voisin in listeAdjacence[noeud])
+            if (!File.Exists(cheminFichier))
             {
-                if (!visites.Contains(voisin))
+                Console.WriteLine("Fichier de liaisons introuvable !");
+                return;
+            }
+
+            foreach (string ligne in File.ReadLines(cheminFichier).Skip(1))
+            {
+                var elements = ligne.Split(';');
+                if (elements.Length >= 5 && int.TryParse(elements[0], out int idStation) &&
+                    int.TryParse(elements[3], out int voisinId))
                 {
-                    if (ExplorerCycle(voisin, noeud, visites)) return true;
-                }
-                else if (!voisin.Equals(parent))
-                {
-                    return true;
+                    AjouterLiaison((T)(object)idStation, (T)(object)voisinId);
                 }
             }
-            return false;
+        }
+
+        public void AfficherStations()
+        {
+            foreach (var station in Noeuds.Values)
+            {
+                Console.WriteLine($"ID: {station.Id}, Ligne: {station.Ligne}, Nom: {station.Nom}, Coords: ({station.Longitude}, {station.Latitude})");
+            }
+        }
+
+        public void AfficherLiaisons()
+        {
+            foreach (var liaison in liaisons)
+            {
+                Console.WriteLine($"Station {liaison.Key} ({Noeuds[liaison.Key].Nom}) connectée à : {string.Join(", ", liaison.Value.Select(id => Noeuds[id].Nom))}");
+            }
+        }
+        public List<T> ObtenirVoisins(T id)
+        {
+            if (liaisons.ContainsKey(id))
+            {
+                return liaisons[id];
+            }
+            return new List<T>(); // Retourne une liste vide si aucun voisin trouvé
         }
     }
+    
 }
