@@ -52,19 +52,24 @@ namespace Pb_scientifique
             }
             image.DessinerGraphe("graphe.png");
 
-            Noeud<int> depart = graphe.Noeuds.ContainsKey(121) ? graphe.Noeuds[121] : null;
+
+            
+
+            Noeud<int> depart = graphe.Noeuds.ContainsKey(109) ? graphe.Noeuds[109] : null;
             Noeud<int> arrivee = graphe.Noeuds.ContainsKey(124) ? graphe.Noeuds[124] : null; // Trouver le noeud d'arrivée (ID 203)
+
+            /*Djikista
             var dijkstra = new Dijkstra<int>(graphe, depart.Id);
             var chemin = dijkstra.GetChemin(arrivee.Id);
 
-            /*Console.WriteLine("Vérification des distances calculées par Dijkstra :");
-            foreach (var kvp in dijkstra.Distances)
-            {
-                if (graphe.Noeuds.TryGetValue(kvp.Key, out var station))
-                {
-                    Console.WriteLine($"Station {station.Nom} ({station.Id}) - Distance: {kvp.Value}");
-                }
-            }*/
+            //Console.WriteLine("Vérification des distances calculées par Dijkstra :");
+            //foreach (var kvp in dijkstra.Distances)
+            //{
+            //    if (graphe.Noeuds.TryGetValue(kvp.Key, out var station))
+            //    {
+            //        Console.WriteLine($"Station {station.Nom} ({station.Id}) - Distance: {kvp.Value}");
+            //    }
+            //}
 
             Console.WriteLine("Chemin le plus court trouvé entre " + depart.Nom + " et " + arrivee.Nom + " :");
 
@@ -80,6 +85,29 @@ namespace Pb_scientifique
                 {
                     Console.WriteLine($"Station introuvable : {stationNom}");
                 }
+            }
+            */
+
+            //Bellman Ford
+            var bellmanFord = new BellmanFord<int>(graphe);
+            bool succes = bellmanFord.CalculerPlusCourtChemin(depart.Id);
+
+            if (succes)
+            {
+                var chemin = bellmanFord.GetChemin(arrivee.Id);
+                Console.WriteLine("Chemin le plus court trouvé avec Bellman-Ford entre " + depart.Nom + " et " + arrivee.Nom + " :");
+
+                foreach (var stationId in chemin)
+                {
+                    if (graphe.Noeuds.TryGetValue(stationId, out var station))
+                    {
+                        Console.WriteLine($"- {station.Nom} (Ligne {station.Ligne})");
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Impossible de calculer le plus court chemin à cause d'un cycle de poids négatif.");
             }
 
 
