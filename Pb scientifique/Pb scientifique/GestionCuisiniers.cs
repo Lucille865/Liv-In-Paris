@@ -8,8 +8,9 @@ namespace Pb_scientifique
 {
     public class GestionCuisiniers
     {
-        private List<Cuisinier> cuisiniers = new List<Cuisinier>();
+        public List<Cuisinier> cuisiniers = new List<Cuisinier>();
         private const string filePath = "Cuisiniers.txt";
+        Graphe<int> graphe = new Graphe<int>();
 
         public GestionCuisiniers()
         {
@@ -73,5 +74,13 @@ namespace Pb_scientifique
 
             return listeCuisiniers;
         }
+
+        public Cuisinier AssignerCuisinierRandom()
+        {
+            Random random = new Random();
+            int indexRandom = random.Next(cuisiniers.Count); // Choisir un index aléatoire
+            return cuisiniers[indexRandom]; // Retourner le cuisinier à cet index
+        }
+
     }
 }

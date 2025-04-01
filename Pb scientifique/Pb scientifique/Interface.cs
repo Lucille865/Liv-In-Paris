@@ -94,6 +94,8 @@ namespace Pb_scientifique
             string mdp = Console.ReadLine();
             Console.WriteLine("Type de client (Particulier / Entreprise) : ");
             string typeClient = Console.ReadLine();
+            Console.WriteLine("Metro le plus proche de l'adresse du client : ");
+            string metroclient = Console.ReadLine();
 
             var client = new Client(nom, adresse, telephone, email, pseudo, mdp, typeClient);
             gestionClients.AjouterClient(client);
@@ -143,6 +145,8 @@ namespace Pb_scientifique
             string pseudo = Console.ReadLine();
             Console.WriteLine("Mot de passe du cuisinier : ");
             string mdp = Console.ReadLine();
+            Console.WriteLine("Metro le plus prche du cuisinier : ");
+            string metrocuisinier = Console.ReadLine();
 
             var cuisinier = new Cuisinier(nom, adresse, telephone, email, pseudo, mdp);
             gestionCuisiniers.AjouterCuisinier(cuisinier);

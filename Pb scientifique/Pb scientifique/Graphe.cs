@@ -96,6 +96,18 @@ namespace Pb_scientifique
             }
             return new List<T>(); // Retourne une liste vide si aucun voisin trouvé
         }
+
+        public T TrouverIdParNom(string nomStation)
+        {
+            foreach (var noeud in Noeuds)
+            {
+                if (noeud.Value.Nom.Equals(nomStation, StringComparison.OrdinalIgnoreCase))
+                {
+                    return noeud.Key; // Retourne l'ID correspondant
+                }
+            }
+            throw new Exception($"Station '{nomStation}' non trouvée.");
+        }
     }
     
 }

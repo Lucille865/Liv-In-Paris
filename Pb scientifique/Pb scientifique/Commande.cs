@@ -16,10 +16,12 @@ namespace Pb_scientifique
         public int Id { get; set; }
         public DateTime Date { get; set; }
 
-        public Commande()
+        public Commande(Client client, Cuisinier cuisinier)
         {
             Id = new Random().Next(1000, 9999); // Génère un ID aléatoire pour chaque commande
             Date = DateTime.Now; // La date de la commande est définie comme l'heure actuelle
+            Client = client;
+            Cuisinier = cuisinier;
         }
 
         private decimal CalculerPrix()
