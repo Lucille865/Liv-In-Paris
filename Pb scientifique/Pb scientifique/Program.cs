@@ -37,8 +37,6 @@ namespace Pb_scientifique
             //image.DessinerGraphe("graphe.png");
             
             var image = new AfficheGraphe<string>();
-            graphe.ChargerStationsDepuisFichier(cheminStations);
-            //graphe.ChargerLiaisonsDepuisFichier(cheminLiaisons);
             Console.WriteLine($"Nombre de stations chargées : {graphe.Noeuds.Count}");
 
             // Afficher les informations des stations
@@ -89,7 +87,7 @@ namespace Pb_scientifique
             */
 
             //Bellman Ford
-            var bellmanFord = new BellmanFord<int>(graphe);
+            /*var bellmanFord = new BellmanFord<int>(graphe);
             bool succes = bellmanFord.CalculerPlusCourtChemin(depart.Id);
 
             if (succes)
@@ -108,7 +106,7 @@ namespace Pb_scientifique
             else
             {
                 Console.WriteLine("Impossible de calculer le plus court chemin à cause d'un cycle de poids négatif.");
-            }
+            }*/
             
 
             /*Floyd Warshall

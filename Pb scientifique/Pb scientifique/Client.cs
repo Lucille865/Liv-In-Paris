@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pb_scientifique
 {
-    public class Client : Utilisateur
+    public class Client
     {
         public string Nom { get; set; }
         public string Adresse { get; set; }
@@ -35,16 +35,7 @@ namespace Pb_scientifique
         public void AfficherInformations()
         {
             Console.WriteLine($"Nom: {Nom}, Adresse: {Adresse}, Téléphone: {Telephone}, Email: {Email}");
-
-            // Vérifie si c'est un particulier ou une entreprise
-            if (TypeClient == "Particulier")
-            {
-                Console.WriteLine($"Prénom: {Prenom}");
-            }
-            else if (TypeClient == "Entreprise")
-            {
-                Console.WriteLine($"Nom Entreprise: {NomEntreprise}, Référent: {Referent}");
-            }
+            
         }
     }
 }

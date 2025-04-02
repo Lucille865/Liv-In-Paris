@@ -105,33 +105,6 @@ namespace Pb_scientifique
             // Calcul du plus court chemin entre le cuisinier et le client
             List<Station> chemin = graphe.PlusCourtChemin(cuisinier.StationActuelle, commande.Client.StationActuelle);
             AfficherChemin(chemin);
-        }
-
-        private Cuisinier TrouverCuisinierLePlusProche(Client client)
-        {
-            Cuisinier meilleurCuisinier = null;
-            double meilleureDistance = double.MaxValue;
-
-            foreach (var cuisinier in cuisiniers)
-            {
-                double distance = graphe.CalculerDistance(cuisinier.StationActuelle, client.StationActuelle);
-                if (distance < meilleureDistance)
-                {
-                    meilleureDistance = distance;
-                    meilleurCuisinier = cuisinier;
-                }
-            }
-            return meilleurCuisinier;
-        }
-
-        private void AfficherChemin(List<Station> chemin)
-        {
-            Console.WriteLine("Chemin le plus court :");
-            foreach (var station in chemin)
-            {
-                Console.Write(station.Nom + " -> ");
-            }
-            Console.WriteLine("Arrivé !");
         }*/
     }
 }

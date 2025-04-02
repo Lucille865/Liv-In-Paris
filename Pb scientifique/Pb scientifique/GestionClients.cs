@@ -8,7 +8,7 @@ namespace Pb_scientifique
 {
     public class GestionClients
     {
-        private List<Client> clients = new List<Client>();
+        public List<Client> clients = new List<Client>();
         private const string filePath = "Clients.txt";
 
         public GestionClients()
@@ -36,7 +36,7 @@ namespace Pb_scientifique
 
             foreach (var client in clients)
             {
-                Console.WriteLine($"Nom: {client.Nom}, Type: {client.TypeClient}, Email: {client.Email}");
+                Console.WriteLine($"Nom: {client.Nom}, Adresse: {client.Adresse}, Type: {client.TypeClient}, Email: {client.Email}");
             }
         }
         private void SauvegarderClients()

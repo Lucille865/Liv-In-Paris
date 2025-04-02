@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pb_scientifique
 {
-    public class Cuisinier : Utilisateur
+    public class Cuisinier
     {
         public string Nom { get; set; }
         public string Adresse { get; set; }
