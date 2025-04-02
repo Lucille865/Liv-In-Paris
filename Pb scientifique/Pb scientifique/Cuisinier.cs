@@ -17,8 +17,13 @@ namespace Pb_scientifique
         public string MotDePasse { get; set; }
         public List<Plat> Plats { get; set; } = new List<Plat>();
         public List<Livraison> Livraisons { get; set; } = new List<Livraison>();
+<<<<<<< Updated upstream
         public string MetroProche { get; set; }
         public Cuisinier(string nom, string prenom, string adresse, string telephone, string email, string identifiant, string motDePasse, string metroProche)
+=======
+
+        public Cuisinier(string nom, string adresse, string telephone, string email, string identifiant, string motDePasse, List<Plat> platsInitiaux = null)
+>>>>>>> Stashed changes
         {
             Nom = nom;
             Prenom = prenom;
@@ -27,12 +32,24 @@ namespace Pb_scientifique
             Email = email;
             Identifiant = identifiant;
             MotDePasse = motDePasse;
+<<<<<<< Updated upstream
             MetroProche = metroProche;
+=======
+            Plats = platsInitiaux ?? new List<Plat>();
+>>>>>>> Stashed changes
         }
 
         public void AjouterPlat(Plat plat)
         {
-            Plats.Add(plat);
+            if (!Plats.Any(p => p.Nom == plat.Nom))
+            {
+                Plats.Add(plat);
+                Console.WriteLine($"Plat {plat.Nom} ajouté au menu du cuisinier {Nom}");
+            }
+            else
+            {
+                Console.WriteLine("Ce plat est déjà dans le menu de ce cuisinier.");
+            }
         }
 
         // Afficher les informations de base du cuisinier

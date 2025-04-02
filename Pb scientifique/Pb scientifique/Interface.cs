@@ -169,6 +169,7 @@ namespace Pb_scientifique
 
         private void AjouterCuisinier()
         {
+<<<<<<< Updated upstream
             Console.Write("Nom : ");
             string nom = Console.ReadLine();
 
@@ -199,6 +200,10 @@ namespace Pb_scientifique
             gestionCuisiniers.AjouterCuisinier(cuisinier);
             Console.WriteLine("Cuisinier ajouté !");
             Console.ReadKey();
+=======
+            gestionCuisiniers.AjouterCuisinier();
+            PauseEtRetourMenu();
+>>>>>>> Stashed changes
         }
 
         private void ListerCuisiniers()
@@ -346,6 +351,8 @@ namespace Pb_scientifique
                 Console.WriteLine("Erreur : Aucun client trouvé avec cet identifiant.");
                 return;
             }
+
+            gestionCommandes.CreerCommande(client);
 
             string cheminStations = "MetroParisNoeuds.txt";
             string cheminLiaisons = "MetroParisArcs.txt";
