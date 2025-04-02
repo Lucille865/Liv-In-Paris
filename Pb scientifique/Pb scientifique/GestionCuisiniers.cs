@@ -83,6 +83,35 @@ namespace Pb_scientifique
         }
 
         private Plat CreerPlat()
+<<<<<<< Updated upstream
+=======
+        {
+            Console.WriteLine("Nom du plat : ");
+            string nom = Console.ReadLine();
+            Console.WriteLine("Type (Entrée/Plat/Dessert) : ");
+            string type = Console.ReadLine();
+            Console.WriteLine("Prix par personne : ");
+            decimal prix = decimal.Parse(Console.ReadLine());
+            Console.WriteLine("Nationalité : ");
+            string nationalite = Console.ReadLine();
+            Console.WriteLine("Régime alimentaire : ");
+            string regime = Console.ReadLine();
+
+            // Création d'une liste d'ingrédients
+            List<string> ingredients = new List<string>();
+            Console.WriteLine("Ajouter des ingrédients (un par ligne, vide pour terminer) :");
+            string ingredient;
+            while (!string.IsNullOrWhiteSpace(ingredient = Console.ReadLine()))
+            {
+                ingredients.Add(ingredient);
+            }
+
+            return new Plat(nom, type, 1, DateTime.Now, DateTime.Now.AddDays(2), prix, nationalite, regime, ingredients);
+        }
+
+        // Méthode pour afficher tous les cuisiniers
+        public void AfficherCuisiniers()
+>>>>>>> Stashed changes
         {
             Console.WriteLine("Nom du plat : ");
             string nom = Console.ReadLine();
@@ -134,10 +163,14 @@ namespace Pb_scientifique
         {
             List<Cuisinier> listeCuisiniers = new List<Cuisinier>();
             Cuisinier cuisinierCourant = null;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
                     using (var reader = cmd.ExecuteReader())
                     {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
                         if (reader.Read())
                         {
@@ -154,6 +187,10 @@ namespace Pb_scientifique
 =======
                         if (ligne.StartsWith("PLAT;") && cuisinierCourant != null)
                         {
+=======
+                        if (ligne.StartsWith("PLAT;") && cuisinierCourant != null)
+                        {
+>>>>>>> Stashed changes
                             var data = ligne.Split(';');
                             var ingredients = data.Length > 6 ? data[6].Split(',').ToList() : new List<string>();
 
@@ -173,6 +210,9 @@ namespace Pb_scientifique
                                     data[0], data[1], data[2], data[3], data[4], data[5]);
                                 listeCuisiniers.Add(cuisinierCourant);
                             }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
                         }
                     }
@@ -225,6 +265,9 @@ namespace Pb_scientifique
                 Console.WriteLine("Cuisinier non trouvé.");
             }
         }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 }

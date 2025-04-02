@@ -16,6 +16,9 @@ namespace Pb_scientifique
         public GestionClients gestionClients;
         public GestionCuisiniers gestionCuisiniers;
 
+        public GestionClients gestionClients;
+        public GestionCuisiniers gestionCuisiniers;
+
         private const string filePath = "Commandes.txt";
 
         public GestionCommandes()
@@ -107,6 +110,33 @@ namespace Pb_scientifique
                                     Date = DateTime.Parse(data[4])
                                 };
                             }
+<<<<<<< Updated upstream
+=======
+                        }
+                        else if (data[0] == "LIGNE" && commandeEnCours != null)
+                        {
+                            // Trouver le plat correspondant
+                            var plat = gestionCuisiniers.cuisiniers
+                                .SelectMany(c => c.Plats)
+                                .FirstOrDefault(p => p.Nom == data[1]);
+
+                            if (plat != null)
+                            {
+                                var ligneCommande = new LigneCommande
+                                {
+                                    Plat = plat,
+                                    Quantite = int.Parse(data[2]),
+                                    DateLivraison = DateTime.Parse(data[3]),
+                                    AdresseLivraison = data[4]
+                                };
+                                commandeEnCours.LignesCommande.Add(ligneCommande);
+                            }
+                        }
+                        else if (data[0] == "FIN_COMMANDE" && commandeEnCours != null)
+                        {
+                            listeCommandes.Add(commandeEnCours);
+                            commandeEnCours = null;
+>>>>>>> Stashed changes
                         }
                         else if (data[0] == "LIGNE" && commandeEnCours != null)
                         {
@@ -140,8 +170,11 @@ namespace Pb_scientifique
         }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 =======
+=======
+>>>>>>> Stashed changes
         public void CreerCommande(Client client)
         {
             // Afficher tous les plats disponibles avec leurs cuisiniers
@@ -219,6 +252,9 @@ namespace Pb_scientifique
         {
             return gestionCuisiniers.cuisiniers.SelectMany(c => c.Plats).ToList();
         }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 }

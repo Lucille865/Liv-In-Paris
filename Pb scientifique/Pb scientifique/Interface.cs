@@ -170,6 +170,7 @@ namespace Pb_scientifique
         private void AjouterCuisinier()
         {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             Console.Write("Nom : ");
             string nom = Console.ReadLine();
 
@@ -201,6 +202,8 @@ namespace Pb_scientifique
             Console.WriteLine("Cuisinier ajouté !");
             Console.ReadKey();
 =======
+=======
+>>>>>>> Stashed changes
             gestionCuisiniers.AjouterCuisinier();
             PauseEtRetourMenu();
 >>>>>>> Stashed changes

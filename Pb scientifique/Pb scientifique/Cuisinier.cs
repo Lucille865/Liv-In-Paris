@@ -23,6 +23,9 @@ namespace Pb_scientifique
 =======
 
         public Cuisinier(string nom, string adresse, string telephone, string email, string identifiant, string motDePasse, List<Plat> platsInitiaux = null)
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         {
             Nom = nom;
@@ -33,7 +36,11 @@ namespace Pb_scientifique
             Identifiant = identifiant;
             MotDePasse = motDePasse;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             MetroProche = metroProche;
+=======
+            Plats = platsInitiaux ?? new List<Plat>();
+>>>>>>> Stashed changes
 =======
             Plats = platsInitiaux ?? new List<Plat>();
 >>>>>>> Stashed changes
