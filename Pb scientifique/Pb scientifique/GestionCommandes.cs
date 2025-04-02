@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,102 +10,50 @@ namespace Pb_scientifique
 {
     public class GestionCommandes
     {
-        private List<Commande> commandes = new List<Commande>();
-        public Client Client { get; set; }
-        public Cuisinier Cuisinier { get; set; }
 
-        private const string filePath = "Commandes.txt";
-
-        public GestionCommandes()
-        {
-            commandes = ChargerCommandes();
-        }
-
-        // Méthode pour ajouter une commande
         public void AjouterCommande(Commande commande)
         {
-            commandes.Add(commande);
-            SauvegarderCommandes();
-            Console.WriteLine("Commande ajoutée.");
+            string query = @"INSERT INTO Commandes 
+                           (ClientId, CuisinierId, Statut, AdresseLivraison, StationLivraison) 
+                           VALUES 
+                           (@ClientId, @CuisinierId, @Statut, @Adresse, @Station)";
+
+            DatabaseManager.ExecuteNonQuery(query,
+                new MySqlParameter("@ClientId", commande.Client),
+                new MySqlParameter("@CuisinierId", commande.Cuisinier),
+                new MySqlParameter("@Statut", commande.Statut),
+                new MySqlParameter("@Adresse", commande.AdresseLivraison),
+                new MySqlParameter("@Station", commande.StationLivraison)
+            );
         }
 
-        // Méthode pour afficher toutes les commandes
-        public void AfficherCommandes()
+        public List<Commande> GetToutesCommandes()
         {
-            if (commandes.Count == 0)
+            var commandes = new List<Commande>();
+            using (var conn = DatabaseManager.GetConnection())
             {
-                Console.WriteLine("Aucune commande à afficher.");
-                return;
-            }
-
-            foreach (var commande in commandes)
-            {
-                string clientNom = commande.Client != null ? commande.Client.Nom : "Inconnu";
-                string cuisinierNom = commande.Cuisinier != null ? commande.Cuisinier.Nom : "Inconnu";
-
-                Console.WriteLine($"Commande ID: {commande.Id}, Client: {clientNom}, Cuisinier: {cuisinierNom}, Total: {commande.TotalPrix}€, Date: {commande.Date}");
-            }
-        }
-
-        private void SauvegarderCommandes()
-        {
-            using (StreamWriter writer = new StreamWriter(filePath))
-            {
-                foreach (var commande in commandes)
+                conn.Open();
+                using (var cmd = new MySqlCommand("SELECT * FROM Commandes", conn))
+                using (var reader = cmd.ExecuteReader())
                 {
-                    string clientNom = commande.Client != null ? commande.Client.Nom : "Inconnu";
-                    string cuisinierNom = commande.Cuisinier != null ? commande.Cuisinier.Nom : "Inconnu";
-
-                    writer.WriteLine($"{commande.Id};{clientNom};{cuisinierNom};{commande.TotalPrix};{commande.Date}");
-                }
-            }
-        }
-
-        private List<Commande> ChargerCommandes()
-        {
-            List<Commande> listeCommandes = new List<Commande>();
-
-            if (File.Exists(filePath))
-            {
-                using (StreamReader reader = new StreamReader(filePath))
-                {
-                    string ligne;
-                    while ((ligne = reader.ReadLine()) != null)
+                    while (reader.Read())
                     {
-                        var data = ligne.Split(';');
-                        if (data.Length == 5)
+                        commandes.Add(new Commande
                         {
-                            Commande commande = new Commande(Client, Cuisinier)
-                            {
-                                Id = int.Parse(data[0]),
-                                Client = !string.IsNullOrEmpty(data[1]) ? new Client(data[1], "", "", "", "", "", "") : new Client("Inconnu", "", "", "", "", "", ""),
-                                Cuisinier = !string.IsNullOrEmpty(data[2]) ? new Cuisinier(data[2], "", "", "", "", "") : new Cuisinier("Inconnu", "", "", "", "", ""),
-                                Date = DateTime.Parse(data[4])
-                            };
-                            listeCommandes.Add(commande);
-                        }
+                            Commande_Id = Convert.ToInt32(reader["Commande_Id"]),
+                            ClientId = Convert.ToInt32(reader["ClientId"]),
+                            CuisinierId = Convert.ToInt32(reader["CuisinierId"]),
+                            Statut = reader["Statut"].ToString(),
+                            AdresseLivraison = reader["AdresseLivraison"].ToString(),
+                            StationLivraison = reader["StationLivraison"].ToString(),
+                            DateCommande = Convert.ToDateTime(reader["DateCommande"])
+                        });
                     }
                 }
             }
-
-            return listeCommandes;
+            return commandes;
         }
 
-        /*public void TraiterCommande(Commande commande)
-        {
-            Cuisinier cuisinier = TrouverCuisinierLePlusProche(commande.Client);
-            if (cuisinier == null)
-            {
-                Console.WriteLine("Aucun cuisinier disponible.");
-                return;
-            }
 
-            commande.AssignerCuisinier(cuisinier);
-            Console.WriteLine($"Commande assignée au cuisinier {cuisinier.Nom}.");
-
-            // Calcul du plus court chemin entre le cuisinier et le client
-            List<Station> chemin = graphe.PlusCourtChemin(cuisinier.StationActuelle, commande.Client.StationActuelle);
-            AfficherChemin(chemin);
-        }*/
     }
 }

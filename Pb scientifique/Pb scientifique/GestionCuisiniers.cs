@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,79 +9,87 @@ namespace Pb_scientifique
 {
     public class GestionCuisiniers
     {
-        public List<Cuisinier> cuisiniers = new List<Cuisinier>();
-        private const string filePath = "Cuisiniers.txt";
-        Graphe<int> graphe = new Graphe<int>();
-
-        public GestionCuisiniers()
-        {
-            cuisiniers = new List<Cuisinier>();
-            cuisiniers = ChargerCuisiniers();
-        }
-
-        // Méthode pour ajouter un cuisinier
         public void AjouterCuisinier(Cuisinier cuisinier)
         {
-            cuisiniers.Add(cuisinier);
-            SauvegarderCuisiniers();
-            Console.WriteLine($"Cuisinier ajouté : {cuisinier.Nom}");
+            string query = @"INSERT INTO Cuisiniers 
+                            (Nom, Prenom, Adresse, Telephone, Email, Identifiant, 
+                             MotDePasse, StationMetroProche) 
+                            VALUES 
+                            (@Nom, @Prenom, @Adresse, @Telephone, @Email, @Identifiant, 
+                             @Mdp, @Metro)";
+
+            DatabaseManager.ExecuteNonQuery(query,
+                new MySqlParameter("@Nom", cuisinier.Nom),
+                new MySqlParameter("@Prenom", cuisinier.Prenom),
+                new MySqlParameter("@Adresse", cuisinier.Adresse),
+                new MySqlParameter("@Telephone", cuisinier.Telephone),
+                new MySqlParameter("@Email", cuisinier.Email),
+                new MySqlParameter("@Identifiant", cuisinier.Identifiant),
+                new MySqlParameter("@Mdp", cuisinier.MotDePasse),
+                new MySqlParameter("@Metro", cuisinier.MetroProche)
+            );
         }
 
-        // Méthode pour afficher tous les cuisiniers
-        public void AfficherCuisiniers()
+        public Cuisinier GetCuisinierParIdentifiant(string identifiant)
         {
-            if (cuisiniers.Count == 0)
+            using (var conn = DatabaseManager.GetConnection())
             {
-                Console.WriteLine("Aucun cuisinier à afficher.");
-                return;
-            }
+                conn.Open();
+                string query = "SELECT * FROM Cuisiniers WHERE Identifiant = @Identifiant";
 
-            foreach (var cuisinier in cuisiniers)
-            {
-                Console.WriteLine($"Nom: {cuisinier.Nom}, Adresse: {cuisinier.Adresse}, Email: {cuisinier.Email}");
-            }
-        }
-
-        private void SauvegarderCuisiniers()
-        {
-            using (StreamWriter writer = new StreamWriter(filePath))
-            {
-                foreach (var cuisinier in cuisiniers)
+                using (var cmd = new MySqlCommand(query, conn))
                 {
-                    writer.WriteLine($"{cuisinier.Nom};{cuisinier.Adresse};{cuisinier.Telephone};{cuisinier.Email};{cuisinier.Identifiant};{cuisinier.MotDePasse}");
-                }
-            }
-        }
-        private List<Cuisinier> ChargerCuisiniers()
-        {
-            List<Cuisinier> listeCuisiniers = new List<Cuisinier>();
+                    cmd.Parameters.AddWithValue("@Identifiant", identifiant);
 
-            if (File.Exists(filePath))
-            {
-                using (StreamReader reader = new StreamReader(filePath))
-                {
-                    string ligne;
-                    while ((ligne = reader.ReadLine()) != null)
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        var data = ligne.Split(';');
-                        if (data.Length == 6)
+                        if (reader.Read())
                         {
-                            Cuisinier cuisinier = new Cuisinier(data[0], data[1], data[2], data[3], data[4], data[5]);
-                            listeCuisiniers.Add(cuisinier);
+                            return new Cuisinier(
+                                reader["Nom"].ToString(),
+                                reader["Prenom"].ToString(),
+                                reader["Adresse"].ToString(),
+                                reader["Telephone"].ToString(),
+                                reader["Email"].ToString(),
+                                reader["Identifiant"].ToString(),
+                                reader["MotDePasse"].ToString(),
+                                reader["StationMetroProche"].ToString()
+                            );
                         }
                     }
                 }
             }
-
-            return listeCuisiniers;
+            return new Cuisinier("","", "", "", "", "", "", "");
         }
 
-        public Cuisinier AssignerCuisinierRandom()
+        public List<Cuisinier> GetTousCuisiniers()
         {
-            Random random = new Random();
-            int indexRandom = random.Next(cuisiniers.Count); // Choisir un index aléatoire
-            return cuisiniers[indexRandom]; // Retourner le cuisinier à cet index
+            var cuisiniers = new List<Cuisinier>();
+            using (var conn = DatabaseManager.GetConnection())
+            {
+                conn.Open();
+                using (var cmd = new MySqlCommand("SELECT * FROM Cuisiniers", conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        cuisiniers.Add(new Cuisinier
+                        (
+                            
+                            reader["Nom"].ToString(),
+                            reader["Prenom"].ToString(),
+                            reader["Adresse"].ToString(),
+                            reader["Telephone"].ToString(),
+                            reader["Email"].ToString(),
+                            reader["Identifiant"].ToString(),
+                            reader["MotDePasse"].ToString(),
+                            reader["StationMetroProche"].ToString()
+                        ));
+                    }
+                }
+            }
+            return cuisiniers;
         }
-
+     
     }
 }
