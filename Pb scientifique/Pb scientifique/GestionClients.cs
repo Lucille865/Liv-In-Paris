@@ -1,4 +1,4 @@
-﻿using MySql.Data.MySqlClient;
+﻿using MySqlX.XDevAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,94 +9,83 @@ namespace Pb_scientifique
 {
     public class GestionClients
     {
+        public List<Client> clients = new List<Client>();
+        private const string filePath = "Clients.txt";
+
+        public GestionClients()
+        {
+            clients = new List<Client>(); // Assurer que la liste est initialisée
+            clients = ChargerClients();
+        }
+
+        public List<Client> GetClients()
+        {
+            return clients; // Retourne la liste interne des clients
+        }
+
+        // Méthode pour ajouter un client
         public void AjouterClient(Client client)
         {
-            string query = @"
-            INSERT INTO Clients 
-            (Nom, Prenom, Adresse, Telephone, Email, Identifiant, 
-             MotDePasse, TypeClient, NomEntreprise, Referent, StationMetroProche) 
-            VALUES 
-            (@Nom, @Prenom, @Adresse, @Telephone, @Email, @Identifiant, 
-             @MotDePasse, @TypeClient, @NomEntreprise, @Referent, @Metro)";
-
-            DatabaseManager.ExecuteNonQuery(query,
-                new MySqlParameter("@Nom", client.Nom),
-                new MySqlParameter("@Prenom", client.Prenom ?? (object)DBNull.Value),
-                new MySqlParameter("@Adresse", client.Adresse),
-                new MySqlParameter("@Telephone", client.Telephone),
-                new MySqlParameter("@Email", client.Email),
-                new MySqlParameter("@Identifiant", client.Identifiant),
-                new MySqlParameter("@MotDePasse", client.MotDePasse),
-                new MySqlParameter("@TypeClient", client.TypeClient),
-                new MySqlParameter("@NomEntreprise", client.NomEntreprise ?? (object)DBNull.Value),
-                new MySqlParameter("@Referent", client.Referent ?? (object)DBNull.Value),
-                new MySqlParameter("@Metro", client.MetroProche)
-            );
+            clients.Add(client);
+            SauvegarderClients();
+            Console.WriteLine($"Client ajouté : {client.Nom}");
         }
-        public List<Client> GetTousClients()
+
+        // Méthode pour afficher tous les clients
+        public void AfficherClients()
         {
-            var clients = new List<Client>();
-            using (var conn = DatabaseManager.GetConnection())
+            if (clients.Count == 0)
             {
-                conn.Open();
-                using (var cmd = new MySqlCommand("SELECT * FROM Clients", conn))
-                using (var reader = cmd.ExecuteReader())
+                Console.WriteLine("Aucun client à afficher.");
+                return;
+            }
+
+            foreach (var client in clients)
+            {
+                Console.WriteLine($"Nom: {client.Nom}, Adresse: {client.Adresse}, Type: {client.TypeClient}, Email: {client.Email}");
+            }
+        }
+        private void SauvegarderClients()
+        {
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine("Nom\tAdresse\tTelephone\tEmail\tPseudo\tMotDePasse\tTypeClient"); // En-tête
+
+                foreach (var client in clients)
                 {
-                    while (reader.Read())
-                    {
-                        clients.Add(new Client
-                        (
-                            reader["Nom"].ToString(),
-                            reader["Prenom"] is DBNull ? null : reader["Prenom"].ToString(),
-                            reader["Adresse"].ToString(),
-                            reader["Telephone"].ToString(),
-                            reader["Email"].ToString(),
-                            reader["Identifiant"].ToString(),
-                            reader["TypeClient"].ToString(),
-                            reader["NomEntreprise"] is DBNull ? null : reader["NomEntreprise"].ToString(),
-                            reader["Referent"] is DBNull ? null : reader["Referent"].ToString(),
-                            reader["StationMetroProche"].ToString()
-                        ));
-                    }
+                    writer.WriteLine($"{client.Nom}\t{client.Adresse}\t{client.Telephone}\t{client.Email}\t{client.Identifiant}\t{client.MotDePasse}\t{client.TypeClient}");
                 }
             }
-            return clients;
         }
-
-        public Client GetClientParIdentifiant(string identifiant)
+        private List<Client> ChargerClients()
         {
-            using (var conn = DatabaseManager.GetConnection())
+            List<Client> listeClients = new List<Client>();
+
+            if (File.Exists(filePath))
             {
-                conn.Open();
-                string query = "SELECT * FROM Clients WHERE Identifiant = @Identifiant";
-
-                using (var cmd = new MySqlCommand(query, conn))
+                using (StreamReader reader = new StreamReader(filePath))
                 {
-                    cmd.Parameters.AddWithValue("@Identifiant", identifiant);
-
-                    using (var reader = cmd.ExecuteReader())
+                    string line;
+                    bool firstLine = true;
+                    while ((line = reader.ReadLine()) != null)
                     {
-                        if (reader.Read())
+                        if (firstLine) // Ignore l'en-tête
                         {
-                            return new Client
-                            (
-                                reader["Nom"].ToString(),
-                                reader["Prenom"]?.ToString(),
-                                reader["Adresse"].ToString(),
-                                reader["Telephone"].ToString(),
-                                reader["Email"].ToString(),
-                                reader["Identifiant"].ToString(),
-                                reader["TypeClient"].ToString(),
-                                reader["NomEntreprise"] is DBNull ? null : reader["NomEntreprise"].ToString(),
-                                reader["Referent"] is DBNull ? null : reader["Referent"].ToString(),
-                                reader["StationMetroProche"].ToString()
-                            );
+                            firstLine = false;
+                            continue;
+                        }
+                        string[] data = line.Split('\t'); // Séparateur tabulation
+                        if (data.Length == 7) // Vérification
+                        {
+                            var client = new Client(data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
+                            listeClients.Add(client);
+
                         }
                     }
                 }
+
             }
-            return null;
+            return listeClients;
         }
-        
     }
 }

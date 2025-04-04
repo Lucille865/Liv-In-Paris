@@ -9,30 +9,6 @@ namespace Pb_scientifique
 {
     public class GestionCuisiniers
     {
-<<<<<<< Updated upstream
-        public void AjouterCuisinier(Cuisinier cuisinier)
-        {
-            string query = @"INSERT INTO Cuisiniers 
-                            (Nom, Prenom, Adresse, Telephone, Email, Identifiant, 
-                             MotDePasse, StationMetroProche) 
-                            VALUES 
-                            (@Nom, @Prenom, @Adresse, @Telephone, @Email, @Identifiant, 
-                             @Mdp, @Metro)";
-
-            DatabaseManager.ExecuteNonQuery(query,
-                new MySqlParameter("@Nom", cuisinier.Nom),
-                new MySqlParameter("@Prenom", cuisinier.Prenom),
-                new MySqlParameter("@Adresse", cuisinier.Adresse),
-                new MySqlParameter("@Telephone", cuisinier.Telephone),
-                new MySqlParameter("@Email", cuisinier.Email),
-                new MySqlParameter("@Identifiant", cuisinier.Identifiant),
-                new MySqlParameter("@Mdp", cuisinier.MotDePasse),
-                new MySqlParameter("@Metro", cuisinier.MetroProche)
-            );
-        }
-
-        public Cuisinier GetCuisinierParIdentifiant(string identifiant)
-=======
         public List<Cuisinier> cuisiniers = new List<Cuisinier>();
         private const string filePath = "Cuisiniers.txt";
         Graphe<int> graphe = new Graphe<int>();
@@ -44,114 +20,114 @@ namespace Pb_scientifique
         }
 
         // Méthode pour ajouter un cuisinier
-        public void AjouterCuisinier()
+        public void AjouterCuisinier(Cuisinier cuisinier)
         {
-            Console.WriteLine("Nom du cuisinier : ");
-            string nom = Console.ReadLine();
-            Console.WriteLine("Métro le plus proche de l'adresse du cuisinier : ");
-            string adresse = Console.ReadLine();
-            Console.WriteLine("Numéro de téléphone : ");
-            string telephone = Console.ReadLine();
-            Console.WriteLine("Email du cuisinier : ");
-            string email = Console.ReadLine();
-            Console.WriteLine("Pseudo du cuisinier : ");
-            string pseudo = Console.ReadLine();
-            Console.WriteLine("Mot de passe du cuisinier : ");
-            string mdp = Console.ReadLine();
-
-            List<Plat> plats = new List<Plat>();
-            bool ajouterPlats = true;
-
-            while (ajouterPlats)
-            {
-                Console.WriteLine("\nAjouter un plat à ce cuisinier (o/n) ?");
-                if (Console.ReadLine().ToLower() == "o")
-                {
-                    Plat plat = CreerPlat();
-                    plats.Add(plat);
-                }
-                else
-                {
-                    ajouterPlats = false;
-                }
-            }
-
-            var cuisinier = new Cuisinier(nom, adresse, telephone, email, pseudo, mdp, plats);
             cuisiniers.Add(cuisinier);
             SauvegarderCuisiniers();
-            Console.WriteLine($"Cuisinier ajouté : {cuisinier.Nom}");
         }
-
-        private Plat CreerPlat()
-<<<<<<< Updated upstream
-=======
+        public Cuisinier CreerCuisinierPlat()
         {
-            Console.WriteLine("Nom du plat : ");
+            // Infos de base
+            Console.Write("Nom : ");
             string nom = Console.ReadLine();
-            Console.WriteLine("Type (Entrée/Plat/Dessert) : ");
-            string type = Console.ReadLine();
-            Console.WriteLine("Prix par personne : ");
-            decimal prix = decimal.Parse(Console.ReadLine());
-            Console.WriteLine("Nationalité : ");
-            string nationalite = Console.ReadLine();
-            Console.WriteLine("Régime alimentaire : ");
-            string regime = Console.ReadLine();
 
-            // Création d'une liste d'ingrédients
-            List<string> ingredients = new List<string>();
-            Console.WriteLine("Ajouter des ingrédients (un par ligne, vide pour terminer) :");
-            string ingredient;
-            while (!string.IsNullOrWhiteSpace(ingredient = Console.ReadLine()))
+            Console.Write("Métro le plus proche : ");
+            string adresse = Console.ReadLine();
+
+            Console.Write("Téléphone : ");
+            string telephone = Console.ReadLine();
+
+            Console.Write("Email : ");
+            string email = Console.ReadLine();
+
+            Console.Write("Identifiant : ");
+            string identifiant = Console.ReadLine();
+
+            Console.Write("Mot de passe : ");
+            string mdp = Console.ReadLine();
+
+            // Création du cuisinier
+            var nouveauCuisinier = new Cuisinier(nom, adresse, telephone, email, identifiant, mdp);
+
+            // Ajout des plats
+            bool ajouterPlats = true;
+            while (ajouterPlats)
             {
-                ingredients.Add(ingredient);
-            }
+                Console.WriteLine("\n=== Ajout d'un plat ===");
+                Console.Write("Nom du plat : ");
+                string nomPlat = Console.ReadLine();
 
-            return new Plat(nom, type, 1, DateTime.Now, DateTime.Now.AddDays(2), prix, nationalite, regime, ingredients);
-        }
+                Console.Write("Type (Entrée/Plat/Dessert) : ");
+                string type = Console.ReadLine();
 
-        // Méthode pour afficher tous les cuisiniers
-        public void AfficherCuisiniers()
->>>>>>> Stashed changes
-        {
-            Console.WriteLine("Nom du plat : ");
-            string nom = Console.ReadLine();
-            Console.WriteLine("Type (Entrée/Plat/Dessert) : ");
-            string type = Console.ReadLine();
-            Console.WriteLine("Prix par personne : ");
-            decimal prix = decimal.Parse(Console.ReadLine());
-            Console.WriteLine("Nationalité : ");
-            string nationalite = Console.ReadLine();
-            Console.WriteLine("Régime alimentaire : ");
-            string regime = Console.ReadLine();
+                Console.Write("Prix par personne : ");
+                decimal prix = decimal.Parse(Console.ReadLine());
 
-            // Création d'une liste d'ingrédients
-            List<string> ingredients = new List<string>();
-            Console.WriteLine("Ajouter des ingrédients (un par ligne, vide pour terminer) :");
-            string ingredient;
-            while (!string.IsNullOrWhiteSpace(ingredient = Console.ReadLine()))
-            {
-                ingredients.Add(ingredient);
-            }
+                Console.Write("Nationalité : ");
+                string nationalite = Console.ReadLine();
 
-            return new Plat(nom, type, 1, DateTime.Now, DateTime.Now.AddDays(2), prix, nationalite, regime, ingredients);
-        }
+                Console.Write("Régime alimentaire : ");
+                string regime = Console.ReadLine();
 
-        // Méthode pour afficher tous les cuisiniers
-        public void AfficherCuisiniers()
->>>>>>> Stashed changes
-        {
-            using (var conn = DatabaseManager.GetConnection())
-            {
-                conn.Open();
-                string query = "SELECT * FROM Cuisiniers WHERE Identifiant = @Identifiant";
-
-                using (var cmd = new MySqlCommand(query, conn))
+                List<string> ingredients = new List<string>();
+                Console.WriteLine("\nAjout des ingrédients (entrez 'fin' pour terminer) :");
+                while (true)
                 {
-<<<<<<< Updated upstream
-                    cmd.Parameters.AddWithValue("@Identifiant", identifiant);
-=======
+                    Console.Write("Ingrédient : ");
+                    string ingredient = Console.ReadLine();
+                    if (ingredient.ToLower() == "fin")
+                        break;
+                    ingredients.Add(ingredient);
+                }
+
+                // Création du plat
+                Plat nouveauPlat = new Plat(
+                    nomPlat,
+                    type,
+                    1,
+                    DateTime.Now,
+                    DateTime.Now.AddDays(2),
+                    prix,
+                    nationalite,
+                    regime,
+                    ingredients
+                );
+
+                nouveauCuisinier.Plats.Add(nouveauPlat);
+
+                // Demande si on continue
+                Console.Write("Ajouter un autre plat? (o/n) ");
+                ajouterPlats = Console.ReadLine().ToLower() == "o";
+            }
+
+            return nouveauCuisinier; // Ligne cruciale ajoutée
+        }
+
+        public void AfficherCuisiniers()
+        {
+            if (cuisiniers.Count == 0)
+            {
+                Console.WriteLine("Aucun cuisinier à afficher.");
+                return;
+            }
+
+            foreach (var cuisinier in cuisiniers)
+            {
+                Console.WriteLine($"Nom: {cuisinier.Nom}, Adresse: {cuisinier.Adresse}, Email: {cuisinier.Email}");
+            }
+        }
+
+        // SauvegarderCuisiniers pour inclure les plats
+        private void SauvegarderCuisiniers()
+        {
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                foreach (var cuisinier in cuisiniers)
+                {
+                    // Écriture des infos de base
                     writer.WriteLine($"{cuisinier.Nom};{cuisinier.Adresse};{cuisinier.Telephone};{cuisinier.Email};{cuisinier.Identifiant};{cuisinier.MotDePasse}");
 
+                    // Écriture des plats
                     foreach (var plat in cuisinier.Plats)
                     {
                         writer.WriteLine($"PLAT;{plat.Nom};{plat.Type};{plat.PrixParPersonne};{plat.Nationalite};{plat.RegimeAlimentaire};{string.Join(",", plat.Ingredients)}");
@@ -159,38 +135,22 @@ namespace Pb_scientifique
                 }
             }
         }
+
+        // Modifions la méthode ChargerCuisiniers pour charger les plats
         private List<Cuisinier> ChargerCuisiniers()
         {
             List<Cuisinier> listeCuisiniers = new List<Cuisinier>();
             Cuisinier cuisinierCourant = null;
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 
-                    using (var reader = cmd.ExecuteReader())
+            if (File.Exists(filePath))
+            {
+                using (StreamReader reader = new StreamReader(filePath))
+                {
+                    string ligne;
+                    while ((ligne = reader.ReadLine()) != null)
                     {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                        if (reader.Read())
-                        {
-                            return new Cuisinier(
-                                reader["Nom"].ToString(),
-                                reader["Prenom"].ToString(),
-                                reader["Adresse"].ToString(),
-                                reader["Telephone"].ToString(),
-                                reader["Email"].ToString(),
-                                reader["Identifiant"].ToString(),
-                                reader["MotDePasse"].ToString(),
-                                reader["StationMetroProche"].ToString()
-                            );
-=======
                         if (ligne.StartsWith("PLAT;") && cuisinierCourant != null)
                         {
-=======
-                        if (ligne.StartsWith("PLAT;") && cuisinierCourant != null)
-                        {
->>>>>>> Stashed changes
                             var data = ligne.Split(';');
                             var ingredients = data.Length > 6 ? data[6].Split(',').ToList() : new List<string>();
 
@@ -210,48 +170,20 @@ namespace Pb_scientifique
                                     data[0], data[1], data[2], data[3], data[4], data[5]);
                                 listeCuisiniers.Add(cuisinierCourant);
                             }
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
                         }
                     }
                 }
             }
-            return new Cuisinier("","", "", "", "", "", "", "");
+
+            return listeCuisiniers;
         }
 
-        public List<Cuisinier> GetTousCuisiniers()
+        public Cuisinier AssignerCuisinierRandom()
         {
-            var cuisiniers = new List<Cuisinier>();
-            using (var conn = DatabaseManager.GetConnection())
-            {
-                conn.Open();
-                using (var cmd = new MySqlCommand("SELECT * FROM Cuisiniers", conn))
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        cuisiniers.Add(new Cuisinier
-                        (
-                            
-                            reader["Nom"].ToString(),
-                            reader["Prenom"].ToString(),
-                            reader["Adresse"].ToString(),
-                            reader["Telephone"].ToString(),
-                            reader["Email"].ToString(),
-                            reader["Identifiant"].ToString(),
-                            reader["MotDePasse"].ToString(),
-                            reader["StationMetroProche"].ToString()
-                        ));
-                    }
-                }
-            }
-            return cuisiniers;
+            Random random = new Random();
+            int indexRandom = random.Next(cuisiniers.Count); // Choisir un index aléatoire
+            return cuisiniers[indexRandom]; // Retourner le cuisinier à cet index
         }
-<<<<<<< Updated upstream
-     
-=======
 
         public void AjouterPlatACuisinier(string nomCuisinier, Plat plat)
         {
@@ -265,9 +197,25 @@ namespace Pb_scientifique
                 Console.WriteLine("Cuisinier non trouvé.");
             }
         }
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+        public Cuisinier TrouverCuisinierPourPlat(string nomPlat)
+        {
+            // Version optimisée avec gestion des cas null
+            var candidats = cuisiniers
+                .Where(c => c?.Plats != null)
+                .Where(c => c.Plats.Any(p =>
+                    p != null &&
+                    p.Nom.Equals(nomPlat, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+
+            if (candidats.Count == 0)
+            {
+                Console.WriteLine($"\n⚠ Aucun cuisinier disponible pour le plat '{nomPlat}'");
+                return null;
+            }
+
+            // Sélection aléatoire plus équitable
+            int index = new Random().Next(0, candidats.Count);
+            return candidats[index];
+        }
     }
 }

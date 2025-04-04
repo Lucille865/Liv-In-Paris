@@ -20,10 +20,9 @@ namespace Pb_scientifique
         // Seulement pour les clients particuliers
         public string NomEntreprise { get; set; } // Seulement pour les entreprises
         public string Referent { get; set; } // Seulement pour les entreprises
-        public string MetroProche { get; set; } 
 
         // Constructeur
-        public Client(string nom, string adresse, string telephone, string email, string identifiant, string motDePasse, string typeClient, string nomEntreprise, string referent, string metroProche)
+        public Client(string nom, string adresse, string telephone, string email, string identifiant, string motDePasse, string typeClient)
         {
             Nom = nom;
             Adresse = adresse;
@@ -32,15 +31,12 @@ namespace Pb_scientifique
             Identifiant = identifiant;
             MotDePasse = motDePasse;
             TypeClient = typeClient;
-            NomEntreprise = nomEntreprise;
-            Referent = referent;    
-            MetroProche = metroProche;
         }
 
         // Méthode pour afficher les informations du client
         public void AfficherInformations()
         {
-            Console.WriteLine($"Nom: {Nom}, Adresse: {Adresse}, Téléphone: {Telephone}, Email: {Email}, Metro le plus proche : {MetroProche}" );
+            Console.WriteLine($"Nom: {Nom}, Adresse: {Adresse}, Téléphone: {Telephone}, Email: {Email}" );
             
         }
     }

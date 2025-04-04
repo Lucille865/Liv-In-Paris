@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -9,339 +10,225 @@ namespace Pb_scientifique
 {
     public class Interface
     {
-        private GestionClients gestionClients;
-        private GestionCuisiniers gestionCuisiniers;
-        private GestionPlats gestionPlats;
-        private GestionCommandes gestionCommandes;
+        public GestionClients gestionClients;
+        public GestionCuisiniers gestionCuisiniers;
+        public GestionCommandes gestionCommandes;
+        Graphe<int> graphe = new Graphe<int>();
 
         public Interface()
         {
             gestionClients = new GestionClients();
             gestionCuisiniers = new GestionCuisiniers();
-            gestionPlats = new GestionPlats();
-            gestionCommandes = new GestionCommandes();
+            gestionCommandes = new GestionCommandes(gestionClients, gestionCuisiniers);
         }
 
         public void AfficherMenu()
         {
-            while (true)
+            Console.Clear();
+            bool continuer = true;
+            while (continuer)
             {
-                Console.Clear();
-                Console.WriteLine("=== LIV'IN PARIS ===");
-                Console.WriteLine("1. Gestion Clients");
-                Console.WriteLine("2. Gestion Cuisiniers");
-                Console.WriteLine("3. Gestion Plats");
-                Console.WriteLine("4. Gestion Commandes");
+                Console.WriteLine("=== Bienvenue dans l'application Liv'in Paris ! ===");
+                Console.WriteLine("Que souhaitez-vous faire ?");
+                Console.WriteLine("1. Gérer les Clients");
+                Console.WriteLine("2. Gérer les Cuisiniers");
+                Console.WriteLine("3. Gérer les Commandes");
+                Console.WriteLine("4. Gérer les Statistiques");
                 Console.WriteLine("5. Quitter");
-                Console.Write("Choix : ");
+                var choix = Console.ReadLine();
 
-                switch (Console.ReadLine())
+                switch (choix)
                 {
-                    case "1": MenuClients(); break;
-                    case "2": MenuCuisiniers(); break;
-                    case "3": MenuPlats(); break;
-                    case "4": MenuCommandes(); break;
-                    case "5": Environment.Exit(0); break;
+                    case "1":
+                        GérerClients();
+                        break;
+                    case "2":
+                        GérerCuisiniers();
+                        break;
+                    case "3":
+                        GérerCommandes();
+                        break;
+                    case "4":
+                        GérerStatistiques();
+                        break;
+                    case "5":
+                        Environment.Exit(0);
+                        break;
+                    default:
+                        Console.WriteLine("Choix invalide.");
+                        PauseEtRetourMenu();
+                        break;
                 }
+            }
+
+        }
+        private void PauseEtRetourMenu()
+        {
+            Console.WriteLine("\nQue souhaitez-vous faire ?");
+            Console.WriteLine("1. Revenir au menu principal");
+            Console.WriteLine("2. Quitter l'application");
+            var choix = Console.ReadLine();
+
+            switch (choix)
+            {
+                case "1":
+                    Console.Clear(); // Efface l'écran avant de revenir au menu
+                    AfficherMenu();
+                    break;
+                case "2":
+                    Environment.Exit(0);
+                    break;
+                default:
+                    Console.WriteLine("Choix invalide. Retour au menu principal...");
+                    Console.Clear();
+                    AfficherMenu();
+                    break;
             }
         }
 
-        #region Clients
-        private void MenuClients()
-        {
-            while (true)
-            {
-                Console.Clear();
-                Console.WriteLine("=== CLIENTS ===");
-                Console.WriteLine("1. Ajouter");
-                Console.WriteLine("2. Lister");
-                Console.WriteLine("3. Rechercher");
-                Console.WriteLine("4. Retour");
-                Console.Write("Choix : ");
 
-                switch (Console.ReadLine())
-                {
-                    case "1": AjouterClient(); break;
-                    case "2": ListerClients(); break;
-                    case "3": RechercherClient(); break;
-                    case "4": return;
-                }
+        private void GérerClients()
+        {
+            Console.Clear();
+            Console.WriteLine("=== CLIENTS ===");
+            Console.WriteLine("1. Ajouter un client");
+            Console.WriteLine("2. Afficher tous les clients");
+            Console.WriteLine("3. Retour");
+            var choix = Console.ReadLine();
+
+            switch (choix)
+            {
+                case "1":
+                    AjouterClient();
+                    break;
+                case "2":
+                    AfficherClients();
+                    break;
+                case "3":
+                    AfficherMenu();
+                    break;
+                default:
+                    Console.WriteLine("Choix invalide.");
+                    break;
             }
         }
 
         private void AjouterClient()
         {
-            Console.Write("Nom : ");
-            string? nom = Console.ReadLine();
+            Console.Clear();
+            Console.WriteLine("=== Ajout d'un nouveau client ===");
 
-            Console.Write("Prénom : ");
-            string? prenom = Console.ReadLine();
+            Console.WriteLine("Nom du client : ");
+            string nom = Console.ReadLine();
+            Console.WriteLine("Metro le plus proche de l'adresse du client : ");
+            string adresse = Console.ReadLine();
+            Console.WriteLine("Numéro de téléphone : ");
+            string telephone = Console.ReadLine();
+            Console.WriteLine("Email du client : ");
+            string email = Console.ReadLine();
+            Console.WriteLine("Pseudo du client : ");
+            string pseudo = Console.ReadLine();
+            Console.WriteLine("Mot de passe du client : ");
+            string mdp = Console.ReadLine();
+            Console.WriteLine("Type de client (Particulier / Entreprise) : ");
+            string typeClient = Console.ReadLine();
 
-            Console.Write("Adresse : ");
-            string? adresse = Console.ReadLine();
 
-            Console.Write("Téléphone : ");
-            string? telephone = Console.ReadLine();
-
-            Console.Write("Email : ");
-            string? email = Console.ReadLine();
-
-            Console.Write("Identifiant : ");
-            string? identifiant = Console.ReadLine();
-
-            Console.Write("Mot de passe : ");
-            string? mdp = Console.ReadLine();
-
-            Console.Write("Type (Particulier/Entreprise) : ");
-            string? type = Console.ReadLine();
-
-            string? entreprise = null, referent = null;
-            if (type == "Entreprise")
+            var client = new Client(nom, adresse, telephone, email, pseudo, mdp, typeClient);
+            if (typeClient == "Particulier")
             {
-                Console.Write("Nom entreprise : ");
-                entreprise = Console.ReadLine();
-                Console.Write("Référent : ");
-                referent = Console.ReadLine();
+                Console.WriteLine($"Prénom: ");
+                string prenom = Console.ReadLine();
             }
-
-            Console.Write("Station métro proche : ");
-            string? metro = Console.ReadLine();
-
-            if (nom == null || prenom == null || adresse == null || telephone == null || email == null || identifiant == null || mdp == null || type == null || metro == null)
+            else if (typeClient == "Entreprise")
             {
-                Console.WriteLine("Erreur : Tous les champs sont obligatoires.");
-                return;
+                Console.WriteLine($"Nom Entreprise: ");
+                string nomEntreprise = Console.ReadLine();
+                Console.WriteLine("Référent: ");
+                string referent = Console.ReadLine();
             }
-
-            var client = new Client(nom, adresse, telephone, email, identifiant, mdp, type,entreprise, referent, metro)
-            {
-                NomEntreprise = entreprise,
-                Referent = referent
-            };
 
             gestionClients.AjouterClient(client);
-            Console.WriteLine("Client ajouté !");
-            Console.ReadKey();
+            Console.WriteLine("Client ajouté avec succès.");
+            PauseEtRetourMenu();
         }
 
-        private void ListerClients()
+        private void AfficherClients()
         {
-            foreach (var c in gestionClients.GetTousClients())
-            {
-                Console.WriteLine($"{c.Identifiant} | {c.Nom} {c.Prenom} | {c.Email} | {c.MetroProche}");
-            }
-            Console.ReadKey();
+            gestionClients.AfficherClients();
+            PauseEtRetourMenu();
         }
 
-        private void RechercherClient()
+        private void GérerCuisiniers()
         {
-            Console.Write("Identifiant : ");
-            var client = gestionClients.GetClientParIdentifiant(Console.ReadLine());
-            if (client != null)
-            {
-                Console.WriteLine($"Nom: {client.Nom}\nAdresse: {client.Adresse}\nMétro: {client.MetroProche}");
-            }
-            else Console.WriteLine("Non trouvé");
-            Console.ReadKey();
-        }
-        #endregion
+            Console.Clear();
+            Console.WriteLine("=== CUISINIERS ===");
+            Console.WriteLine("1. Ajouter un cuisinier");
+            Console.WriteLine("2. Afficher tous les cuisiniers");
+            Console.WriteLine("3. Retour");
+            var choix = Console.ReadLine();
 
-        #region Cuisiniers
-        private void MenuCuisiniers()
-        {
-            while (true)
+            switch (choix)
             {
-                Console.Clear();
-                Console.WriteLine("=== CUISINIERS ===");
-                Console.WriteLine("1. Ajouter");
-                Console.WriteLine("2. Lister");
-                Console.WriteLine("3. Retour");
-                Console.Write("Choix : ");
-
-                switch (Console.ReadLine())
-                {
-                    case "1": AjouterCuisinier(); break;
-                    case "2": ListerCuisiniers(); break;
-                    case "3": return;
-                }
+                case "1":
+                    AjouterCuisinier();
+                    break;
+                case "2":
+                    AfficherCuisiniers();
+                    break;
+                case "3":
+                    AfficherMenu();
+                    break;
+                default:
+                    Console.WriteLine("Choix invalide.");
+                    break;
             }
         }
 
         private void AjouterCuisinier()
         {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            Console.Write("Nom : ");
-            string nom = Console.ReadLine();
+            Console.Clear();
+            Console.WriteLine("=== Ajout d'un nouveau cuisinier ===");
 
-            Console.Write("Prénom : ");
-            string prenom = Console.ReadLine();
-
-            Console.Write("Adresse : ");
-            string adresse = Console.ReadLine();
-
-            Console.Write("Téléphone : ");
-            string telephone = Console.ReadLine();
-
-            Console.Write("Email : ");
-            string email = Console.ReadLine();
-
-            Console.Write("Identifiant : ");
-            string identifiant = Console.ReadLine();
-
-            Console.Write("Mot de passe : ");
-            string mdp = Console.ReadLine();
-
-            Console.Write("Station métro proche : ");
-            string metro = Console.ReadLine();
-
-            var cuisinier = new Cuisinier
-            (nom, prenom, adresse, telephone, email, identifiant, mdp, metro);
-
+            Cuisinier cuisinier = gestionCuisiniers.CreerCuisinierPlat();
             gestionCuisiniers.AjouterCuisinier(cuisinier);
-            Console.WriteLine("Cuisinier ajouté !");
-            Console.ReadKey();
-=======
-=======
->>>>>>> Stashed changes
-            gestionCuisiniers.AjouterCuisinier();
+            Console.WriteLine($"Cuisinier ajouté : {cuisinier.Nom} avec succès !");
             PauseEtRetourMenu();
->>>>>>> Stashed changes
         }
 
-        private void ListerCuisiniers()
+        private void AfficherCuisiniers()
         {
-            foreach (var c in gestionCuisiniers.GetTousCuisiniers())
+            gestionCuisiniers.AfficherCuisiniers();
+            PauseEtRetourMenu();
+        }
+
+        private void GérerCommandes()
+        {
+            Console.Clear();
+            Console.WriteLine("=== COMMANDES ===");
+            Console.WriteLine("1. Créer une commande");
+            Console.WriteLine("2. Afficher toutes les commandes");
+            Console.WriteLine("3. Retour");
+            var choix = Console.ReadLine();
+
+            switch (choix)
             {
-                Console.WriteLine($"{c.Identifiant} | {c.Nom} {c.Prenom} | {c.Email} | {c.MetroProche}");
-            }
-            Console.ReadKey();
-        }
-        #endregion
-
-        #region Plats
-        private void MenuPlats()
-        {
-            while (true)
-            {
-                Console.Clear();
-                Console.WriteLine("=== PLATS ===");
-                Console.WriteLine("1. Ajouter");
-                Console.WriteLine("2. Lister");
-                Console.WriteLine("3. Retour");
-                Console.Write("Choix : ");
-
-                switch (Console.ReadLine())
-                {
-                    case "1": AjouterPlat(); break;
-                    case "2": ListerPlats(); break;
-                    case "3": return;
-                }
-            }
-        }
-
-        private void AjouterPlat()
-        {
-            Console.Write("ID Cuisinier : ");
-            int idCuisinier = int.Parse(Console.ReadLine());
-
-            Console.Write("Nom du plat : ");
-            string nom = Console.ReadLine();
-
-            Console.Write("Type (Entrée/Plat/Dessert) : ");
-            string type = Console.ReadLine();
-
-            Console.Write("Régime alimentaire : ");
-            string regime = Console.ReadLine();
-
-            Console.Write("Nationalité : ");
-            string nationalite = Console.ReadLine();
-
-            Console.Write("Prix par personne : ");
-            decimal prix = decimal.Parse(Console.ReadLine());
-
-            Console.Write("Date péremption (YYYY-MM-DD) : ");
-            DateTime peremption = DateTime.Parse(Console.ReadLine());
-
-            var plat = new Plat
-            (nom, type, 1, DateTime.Now, peremption, prix, nationalite, regime, new List<string>());
-            gestionPlats.AjouterPlat(plat);
-            Console.WriteLine("Plat ajouté !");
-            Console.ReadKey();
-        }
-
-        private void ListerPlats()
-        {
-            foreach (var p in gestionPlats.GetTousPlats())
-            {
-                Console.WriteLine($"{p.Plat_Id} | {p.Nom} | {p.Type} | {p.PrixParPersonne}€");
-            }
-            Console.ReadKey();
-        }
-        #endregion
-
-        #region Commandes
-        private void MenuCommandes()
-        {
-            while (true)
-            {
-                Console.Clear();
-                Console.WriteLine("=== COMMANDES ===");
-                Console.WriteLine("1. Créer");
-                Console.WriteLine("2. Lister");
-                Console.WriteLine("3. Retour");
-                Console.Write("Choix : ");
-
-                /*switch (Console.ReadLine())
-                {
-                    case "1": CreerCommande(); break;
-                    case "2": ListerCommandes(); break;
-                    case "3": return;
-                }*/
+                case "1":
+                    CreerCommande();
+                    break;
+                case "2":
+                    AfficherCommandes();
+                    break;
+                case "3":
+                    AfficherMenu();
+                    break;
+                default:
+                    Console.WriteLine("Choix invalide.");
+                    break;
             }
         }
 
-        /*private void CreerCommande()
-        {
-            Console.Write("ID Client : ");
-            int idClient = int.Parse(Console.ReadLine());
-
-            Console.Write("ID Cuisinier : ");
-            int idCuisinier = int.Parse(Console.ReadLine());
-
-            Console.Write("Adresse livraison : ");
-            string adresse = Console.ReadLine();
-
-            Console.Write("Station métro livraison : ");
-            string station = Console.ReadLine();
-
-            var commande = new Commande
-            {
-                ClientId = idClient,
-                CuisinierId = idCuisinier,
-                AdresseLivraison = adresse,
-                StationLivraison = station,
-                Statut = "En préparation"
-            };
-
-            gestionCommandes.AjouterCommande(commande);
-            Console.WriteLine("Commande créée !");
-            Console.ReadKey();
-        }
-
-        private void ListerCommandes()
-        {
-            foreach (var c in gestionCommandes.GetToutesCommandes())
-            {
-                Console.WriteLine($"#{c.Commande_Id} | Client: {c.ClientId} | Statut: {c.Statut}");
-            }
-            Console.ReadKey();
-        }*/
-        #endregion
-
-       
-
-        /*private void CreerCommande()
+        private void CreerCommande()
         {
             Console.Write("Entrez votre identifiant de client : ");
             string clientId = Console.ReadLine();
@@ -357,7 +244,7 @@ namespace Pb_scientifique
 
             gestionCommandes.CreerCommande(client);
 
-            string cheminStations = "MetroParisNoeuds.txt";
+            /*string cheminStations = "MetroParisNoeuds.txt";
             string cheminLiaisons = "MetroParisArcs.txt";
             graphe.ChargerStationsDepuisFichier(cheminStations);
             graphe.ChargerLiaisonsDepuisFichier(cheminLiaisons);
@@ -387,18 +274,99 @@ namespace Pb_scientifique
             else
             {
                 Console.WriteLine("Impossible de calculer le plus court chemin à cause d'un cycle de poids négatif.");
-            }
+            }*/
 
             PauseEtRetourMenu();
-        }*/
+        }
 
-        
+        private void AfficherCommandes()
+        {
+            gestionCommandes.AfficherCommandes();
+            PauseEtRetourMenu();
+        }
 
         private void GérerStatistiques()
         {
-            // Logique pour afficher des statistiques
-            Console.WriteLine("Statistiques à venir...");
-            AfficherMenu();
+            Console.Clear();
+            var statistiques = new Statistiques(gestionCommandes, gestionClients, gestionCuisiniers);
+
+            while (true)
+            {
+                Console.WriteLine("=== STATISTIQUES ===");
+                Console.WriteLine("1. Chiffre d'affaires par cuisinier");
+                Console.WriteLine("2. Plats les plus populaires");
+                Console.WriteLine("3. Nombre moyen de commandes par client");
+                Console.WriteLine("4. Revenir au menu principal");
+                Console.Write("\nVotre choix : ");
+
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        AfficherChiffreAffaires(statistiques);
+                        break;
+                    case "2":
+                        AfficherPlatsPopulaires(statistiques);
+                        break;
+                    case "3":
+                        AfficherMoyenneCommandes(statistiques);
+                        break;
+                    case "4":
+                        return;
+                    default:
+                        Console.WriteLine("Option invalide");
+                        break;
+                }
+            }
+        }
+
+        private void AfficherChiffreAffaires(Statistiques stats)
+        {
+            Console.WriteLine("\n=== CHIFFRE D'AFFAIRES PAR CUISINIER ===");
+            var caParCuisinier = stats.GetChiffreAffaireParCuisinier();
+
+            if (!caParCuisinier.Any())
+            {
+                Console.WriteLine("Aucune donnée disponible");
+                return;
+            }
+
+            Console.WriteLine("{0,-20} {1,10}", "Cuisinier", "CA (€)");
+            Console.WriteLine(new string('-', 32));
+
+            foreach (var item in caParCuisinier)
+            {
+                Console.WriteLine("{0,-20} {1,10:N2}", item.Key, item.Value);
+            }
+            PauseEtRetourMenu();
+        }
+
+        private void AfficherPlatsPopulaires(Statistiques stats)
+        {
+            Console.WriteLine("\n=== PLATS LES PLUS POPULAIRES ===");
+            var platsPopulaires = stats.GetPlatsPopulaires(5);
+
+            if (!platsPopulaires.Any())
+            {
+                Console.WriteLine("Aucune donnée disponible");
+                return;
+            }
+
+            Console.WriteLine("{0,-20} {1,10}", "Plat", "Commandes");
+            Console.WriteLine(new string('-', 32));
+
+            foreach (var plat in platsPopulaires)
+            {
+                Console.WriteLine("{0,-20} {1,10}", plat.Key, plat.Value);
+            }
+            PauseEtRetourMenu();
+        }
+
+        private void AfficherMoyenneCommandes(Statistiques stats)
+        {
+            Console.WriteLine("\n=== MOYENNE DE COMMANDES PAR CLIENT ===");
+            decimal moyenne = stats.GetMoyenneCommandesParClient();
+            Console.WriteLine($"\nChaque client a effectué en moyenne {moyenne:N2} commandes");
+            PauseEtRetourMenu();
         }
     }
 

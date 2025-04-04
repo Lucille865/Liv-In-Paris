@@ -9,7 +9,6 @@ namespace Pb_scientifique
     public class Cuisinier
     {
         public string Nom { get; set; }
-        public string Prenom { get; set; }
         public string Adresse { get; set; }
         public string Telephone { get; set; }
         public string Email { get; set; }
@@ -17,33 +16,16 @@ namespace Pb_scientifique
         public string MotDePasse { get; set; }
         public List<Plat> Plats { get; set; } = new List<Plat>();
         public List<Livraison> Livraisons { get; set; } = new List<Livraison>();
-<<<<<<< Updated upstream
-        public string MetroProche { get; set; }
-        public Cuisinier(string nom, string prenom, string adresse, string telephone, string email, string identifiant, string motDePasse, string metroProche)
-=======
 
-        public Cuisinier(string nom, string adresse, string telephone, string email, string identifiant, string motDePasse, List<Plat> platsInitiaux = null)
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+        public Cuisinier(string nom, string adresse, string telephone, string email, string identifiant, string motDePasse)
         {
             Nom = nom;
-            Prenom = prenom;
             Adresse = adresse;
             Telephone = telephone;
             Email = email;
             Identifiant = identifiant;
             MotDePasse = motDePasse;
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            MetroProche = metroProche;
-=======
-            Plats = platsInitiaux ?? new List<Plat>();
->>>>>>> Stashed changes
-=======
-            Plats = platsInitiaux ?? new List<Plat>();
->>>>>>> Stashed changes
+            Plats = new List<Plat>();
         }
 
         public void AjouterPlat(Plat plat)
@@ -62,7 +44,7 @@ namespace Pb_scientifique
         // Afficher les informations de base du cuisinier
         public void AfficherInformations()
         {
-            Console.WriteLine($"Nom: {Nom}, Adresse: {Adresse}, Téléphone: {Telephone}, Email: {Email}, Metro le plus proche : {MetroProche}");
+            Console.WriteLine($"Nom: {Nom}, Adresse: {Adresse}, Téléphone: {Telephone}, Email: {Email}");
         }
 
         // Afficher le nombre de livraisons effectuées
