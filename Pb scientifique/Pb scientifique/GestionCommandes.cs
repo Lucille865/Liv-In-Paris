@@ -60,14 +60,15 @@ namespace Pb_scientifique
 
                     // Demander la quantité
                     Console.Write("Quantité : ");
-                    if (!int.TryParse(Console.ReadLine(), out int quantite) || quantite <= 0)
+                    int quantite = Convert.ToInt32(Console.ReadLine());
+                    if (quantite <= 0)
                     {
                         Console.WriteLine("Quantité invalide, valeur par défaut (1) utilisée.");
                         quantite = 1;
                     }
 
                     decimal prixParLigne = platChoisi.PrixParPersonne * quantite;
-                    Console.WriteLine($"\nPrix à payer pour ce plat : {prixTotal} euros");
+                    Console.WriteLine($"\nPrix à payer pour ce plat : {prixParLigne} euros");
 
                     // Choix de l'adresse de livraison
                     Console.WriteLine("\nOptions de livraison :");

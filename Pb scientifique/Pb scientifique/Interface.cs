@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -14,12 +15,14 @@ namespace Pb_scientifique
         public GestionCuisiniers gestionCuisiniers;
         public GestionCommandes gestionCommandes;
         Graphe<int> graphe = new Graphe<int>();
+        private RelationVisualizer visualiseur;
 
         public Interface()
         {
             gestionClients = new GestionClients();
             gestionCuisiniers = new GestionCuisiniers();
             gestionCommandes = new GestionCommandes(gestionClients, gestionCuisiniers);
+            visualiseur = new RelationVisualizer(gestionClients, gestionCuisiniers);
         }
 
         public void AfficherMenu()
@@ -296,7 +299,8 @@ namespace Pb_scientifique
                 Console.WriteLine("1. Chiffre d'affaires par cuisinier");
                 Console.WriteLine("2. Plats les plus populaires");
                 Console.WriteLine("3. Nombre moyen de commandes par client");
-                Console.WriteLine("4. Revenir au menu principal");
+                Console.WriteLine("4. Graphe des relations");
+                Console.WriteLine("5. Revenir au menu principal");
                 Console.Write("\nVotre choix : ");
 
                 switch (Console.ReadLine())
@@ -311,6 +315,10 @@ namespace Pb_scientifique
                         AfficherMoyenneCommandes(statistiques);
                         break;
                     case "4":
+                        visualiseur.GenererGrapheComplet(gestionCommandes.GetCommandes());
+                        Process.Start("explorer.exe", "relations.png");
+                        break;
+                    case "5":
                         return;
                     default:
                         Console.WriteLine("Option invalide");
