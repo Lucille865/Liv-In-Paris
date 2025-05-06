@@ -48,7 +48,7 @@ namespace Pb_scientifique
             var parameters = new List<MySqlParameter>
             {
                 new MySqlParameter("@Nom", client.Nom),
-                new MySqlParameter("@Prenom", client.Prenom ?? (object)DBNull.Value),
+                new MySqlParameter("@Prenom ", client.Prenom ?? (object)DBNull.Value),
                 new MySqlParameter("@Adresse", client.Adresse),
                 new MySqlParameter("@Telephone", client.Telephone),
                 new MySqlParameter("@Email", client.Email),

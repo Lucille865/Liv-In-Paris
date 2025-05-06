@@ -7,8 +7,16 @@ using MySql.Data.MySqlClient;
 
 namespace Pb_scientifique
 {
-    internal class Autre
+    public class Autre
     {
+        private GestionClients gestionClients;
+        private GestionCuisiniers gestionCuisiniers;
+
+        public Autre(GestionClients clients, GestionCuisiniers cuisiniers)
+        {
+            gestionClients = clients;
+            gestionCuisiniers = cuisiniers;
+        }
         public string VerifierRetard(Commande commande, TimeSpan? dureeLivraisonMax = null)
         {
             // Si la commande n'a pas encore de statut définitif, on peut la considérer comme "En attente"
@@ -52,6 +60,27 @@ namespace Pb_scientifique
             {
                 Console.WriteLine($"{client.Nom} {client.Prenom ?? ""} - {client.Email}");
             }
+        }
+
+        public void AfficherTousLesUtilisateurs()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("=== LISTE DES UTILISATEURS (Clients + Cuisiniers) ===");
+            Console.ResetColor();
+
+            Console.WriteLine("\n--- Clients ---");
+            foreach (var client in gestionClients.GetClients())
+            {
+                Console.WriteLine($"{client.Identifiant} | {client.Nom} | {client.Email}");
+            }
+
+            Console.WriteLine("\n--- Cuisiniers ---");
+            foreach (var cuis in gestionCuisiniers.GetTousCuisiniers())
+            {
+                Console.WriteLine($"{cuis.Identifiant} | {cuis.Nom} | {cuis.Email}");
+            }
+
         }
 
     }

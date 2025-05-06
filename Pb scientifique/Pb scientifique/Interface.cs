@@ -27,7 +27,7 @@ namespace Pb_scientifique
             gestionCuisiniers = new GestionCuisiniers();
             gestionCommandes = new GestionCommandes(gestionClients, gestionCuisiniers);
             visualiseur = new RelationVisualizer(gestionClients, gestionCuisiniers);
-            autre = new Autre();
+            autre = new Autre(gestionClients, gestionCuisiniers);
         }
 
         public void AfficherMenu()
@@ -843,7 +843,7 @@ namespace Pb_scientifique
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("\n--- AUTRE ---");
             Console.ResetColor();
-            Console.WriteLine("1. Créer une commande");
+            Console.WriteLine("1. Afficher tous les utilisateurs");
             Console.WriteLine("2. Afficher les clients inactifs");
             Console.WriteLine("3. Vérifier les retards");
             Console.WriteLine("4. Retour");
@@ -855,7 +855,8 @@ namespace Pb_scientifique
             switch (choix)
             {
                 case "1":
-                    CreerCommande();
+                    autre.AfficherTousLesUtilisateurs();
+                    PauseEtRetourMenu();
                     break;
                 case "2":
                     autre.AfficherClientsInactifs(clients, commandes);
