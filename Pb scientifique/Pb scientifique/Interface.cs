@@ -164,6 +164,7 @@ namespace Pb_scientifique
 
         public void SupprimerClient()
         {
+            Console.Clear();
             Console.Write("Entrez l'identifiant (pseudo) du client à supprimer : ");
             string identifiant = Console.ReadLine();
 
@@ -247,6 +248,7 @@ namespace Pb_scientifique
 
         private void SupprimerCuisinier()
         {
+            Console.Clear();
             Console.Write("Entrez l'identifiant (pseudo) du cuisinier à supprimer : ");
             string identifiant = Console.ReadLine();
 
@@ -298,6 +300,7 @@ namespace Pb_scientifique
 
         private void CreerCommande()
         {
+            Console.Clear();
             Console.Write("Entrez votre identifiant de client : ");
             string clientId = Console.ReadLine();
 
@@ -412,6 +415,7 @@ namespace Pb_scientifique
 
         private void AfficherChiffreAffaires(Statistiques stats)
         {
+            Console.Clear();
             Console.WriteLine("\n=== CHIFFRE D'AFFAIRES PAR CUISINIER ===");
             var caParCuisinier = stats.GetChiffreAffaireParCuisinier();
 
@@ -433,6 +437,7 @@ namespace Pb_scientifique
 
         private void AfficherPlatsPopulaires(Statistiques stats)
         {
+            Console.Clear();
             Console.WriteLine("\n=== PLATS LES PLUS POPULAIRES ===");
             var platsPopulaires = stats.GetPlatsPopulaires(5);
 
@@ -454,6 +459,7 @@ namespace Pb_scientifique
 
         private void AfficherMoyenneCommandes(Statistiques stats)
         {
+            Console.Clear();
             Console.WriteLine("\n=== MOYENNE DE COMMANDES PAR CLIENT ===");
             decimal moyenne = stats.GetMoyenneCommandesParClient();
             Console.WriteLine($"\nChaque client a effectué en moyenne {moyenne:N2} commandes");
