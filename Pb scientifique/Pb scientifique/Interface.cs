@@ -190,7 +190,10 @@ namespace Pb_scientifique
             Console.WriteLine("1. Ajouter un cuisinier");
             Console.WriteLine("2. Afficher tous les cuisiniers");
             Console.WriteLine("3. Supprimer des cuisiniers");
-            Console.WriteLine("4. Retour");
+            Console.WriteLine("4. Afficher les plats par fréquence");
+            Console.WriteLine("5. Afficher le plat du jour");
+            Console.WriteLine("6. Afficher les clients servis");
+            Console.WriteLine("7. Retour");
             Console.Write("\nVotre choix : ");
 
             var choix = Console.ReadLine();
@@ -200,7 +203,10 @@ namespace Pb_scientifique
                 case "1": AjouterCuisinier(); break;
                 case "2": AfficherCuisiniers(); break;
                 case "3": SupprimerCuisinier(); break;
-                case "4": AfficherMenu(); break;
+                case "4": AfficherPlatsParFrequence(); break;
+                case "5": AfficherPlatDuJour(); break;
+                case "6": AfficherClientsServis(); break;
+                case "7": AfficherMenu(); break;
                 default:
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("\nChoix invalide.");
@@ -266,6 +272,86 @@ namespace Pb_scientifique
 
             PauseEtRetourMenu();
         }
+
+        private void AfficherPlatsParFrequence()
+        {
+            Console.Clear();
+            Console.Write("Entrez l'identifiant (pseudo) du cuisinier : ");
+            string identifiant = Console.ReadLine();
+
+            var cuisinier = gestionCuisiniers.GetCuisinierByIdentifiant(identifiant); // Méthode à implémenter dans GestionCuisiniers
+            if (cuisinier != null)
+            {
+                cuisinier.AfficherPlatsParFrequence();  // Appel de la méthode sur l'objet cuisinier
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Cuisinier non trouvé.");
+                Console.ResetColor();
+            }
+
+            PauseEtRetourMenu();
+        }
+
+        private void AfficherPlatDuJour()
+        {
+            Console.Clear();
+            Console.Write("Entrez l'identifiant (pseudo) du cuisinier : ");
+            string identifiant = Console.ReadLine();
+
+            var cuisinier = gestionCuisiniers.GetCuisinierByIdentifiant(identifiant); 
+            if (cuisinier != null)
+            {
+                cuisinier.AfficherPlatDuJour();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Cuisinier non trouvé.");
+                Console.ResetColor();
+            }
+
+            PauseEtRetourMenu();
+        }
+
+        /// <summary>
+        /// Affiche les clients servis par le cuisinier.
+        /// </summary>
+        public void AfficherClientsServis()
+        {
+            Console.Clear();
+            Console.Write("Entrez l'identifiant du cuisinier : ");
+            string identifiant = Console.ReadLine();
+
+            var cuisinier = gestionCuisiniers.GetCuisinierByIdentifiant(identifiant);
+            if (cuisinier != null)
+            {
+                var commandesCuisinier = gestionCommandes.GetCommandes()
+                    .Where(c => c.Cuisinier?.Identifiant == identifiant).ToList();
+
+                if (commandesCuisinier.Any())
+                {
+                    Console.WriteLine("Clients servis :");
+                    foreach (var commande in commandesCuisinier)
+                    {
+                        Console.WriteLine($"- Client: {commande.Client.Nom}, Plat: {commande.LignesCommande.First().Plat.Nom}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Ce cuisinier n'a pas servi de clients.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Cuisinier introuvable.");
+            }
+
+            Console.WriteLine("\nAppuyez sur une touche pour revenir au menu...");
+            Console.ReadKey();
+        }
+
 
         private void GérerCommandes()
         {

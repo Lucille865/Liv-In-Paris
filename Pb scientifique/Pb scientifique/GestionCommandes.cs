@@ -279,6 +279,13 @@ namespace Pb_scientifique
         public void AjouterCommande(Commande commande)
         {
             commandes.Add(commande);
+
+            // Ajouter la commande au cuisinier
+            if (commande.Cuisinier != null)
+            {
+                commande.Cuisinier.AjouterCommande(commande); // <-- Nouvelle ligne
+            }
+
             SauvegarderCommandes();
             Console.WriteLine("Commande ajoutée.");
         }
@@ -402,5 +409,7 @@ namespace Pb_scientifique
 
             return loadedCommandes;
         }
+
+        
     }
 }
