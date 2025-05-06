@@ -106,30 +106,6 @@ namespace Pb_scientifique
             Commandes.Add(commande);
         }
 
-        /// <summary>
-        /// Affiche les clients servis par le cuisinier.
-        /// </summary>
-        /*public void AfficherClientsServis()
-        {
-
-                // Récupère les commandes du cuisinier depuis GestionCommandes
-                var commandesCuisinier = gestionCommandes.GetCommandes()
-                    .Where(c => c.Cuisinier?.Identifiant == identifiant).ToList();
-
-                if (commandesCuisinier.Any())
-                {
-                    Console.WriteLine("Clients servis :");
-                    foreach (var commande in commandesCuisinier)
-                    {
-                        Console.WriteLine($"- Client: {commande.Client.Nom}, Plat: {commande.LignesCommande.First().Plat.Nom}");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Ce cuisinier n'a pas servi de clients (via GestionCommandes).");
-                }
-            
-        }*/
 
     }
 }

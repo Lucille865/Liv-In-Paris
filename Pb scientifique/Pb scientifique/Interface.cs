@@ -1,7 +1,9 @@
 ﻿using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
@@ -41,7 +43,8 @@ namespace Pb_scientifique
                 Console.WriteLine("2. Gérer les Cuisiniers");
                 Console.WriteLine("3. Gérer les Commandes");
                 Console.WriteLine("4. Gérer les Statistiques");
-                Console.WriteLine("5. Quitter");
+                Console.WriteLine("5. Autre");
+                Console.WriteLine("6. Quitter");
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("╚═════════════════════════════════════════════════════════════╝");
                 Console.ResetColor();
@@ -56,7 +59,8 @@ namespace Pb_scientifique
                     case "2": GérerCuisiniers(); break;
                     case "3": GérerCommandes(); break;
                     case "4": GérerStatistiques(); break;
-                    case "5": continuer = false; break;
+                    case "5": Autre(); break;
+                    case "6": continuer = false; break;
                     default:
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("\nChoix invalide. Veuillez réessayer.\n");
@@ -84,8 +88,7 @@ namespace Pb_scientifique
             Console.WriteLine("1. Ajouter un client");
             Console.WriteLine("2. Afficher tous les clients");
             Console.WriteLine("3. Supprimer un client");
-            Console.WriteLine("4. Afficher les clients inactifs");
-            Console.WriteLine("5. Retour");
+            Console.WriteLine("4. Retour");
             Console.Write("\nVotre choix : ");
 
             var choix = Console.ReadLine();
@@ -97,10 +100,7 @@ namespace Pb_scientifique
                 case "1": AjouterClient(); break;
                 case "2": AfficherClients(); break;
                 case "3": SupprimerClient(); break;
-                case "4": autre.AfficherClientsInactifs(clients,commandes); 
-                          PauseEtRetourMenu(); 
-                          break;
-                case "5": AfficherMenu(); break;
+                case "4": AfficherMenu(); break;
                 default:
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("\nChoix invalide.");
@@ -369,8 +369,7 @@ namespace Pb_scientifique
             Console.ResetColor();
             Console.WriteLine("1. Créer une commande");
             Console.WriteLine("2. Afficher toutes les commandes");
-            Console.WriteLine("3. Vérifier les retards");
-            Console.WriteLine("4. Retour");
+            Console.WriteLine("3. Retour");
             var choix = Console.ReadLine();
             Console.Clear();
 
@@ -383,14 +382,6 @@ namespace Pb_scientifique
                     AfficherCommandes();
                     break;
                 case "3":
-                    var commande = new Commande(new Client(), new Cuisinier()); // Exemple de commande
-                    commande.Date = DateTime.Now.AddMinutes(-90); // Exemple: commande passée il y a 90 minutes
-                    commande.Statut = "En attente"; // Statut de la commande
-                    // Vérification du retard avec un délai de livraison de 2 heures
-                    string resultat = autre.VerifierRetard(commande, TimeSpan.FromHours(2)); // Spécification du délai de 2h
-                    Console.WriteLine(resultat);
-                    break;
-                case "4":
                     AfficherMenu();
                     break;
                 default:
@@ -568,6 +559,50 @@ namespace Pb_scientifique
             decimal moyenne = stats.GetMoyenneCommandesParClient();
             Console.WriteLine($"\nChaque client a effectué en moyenne {moyenne:N2} commandes");
             PauseEtRetourMenu();
+        }
+
+        private void Autre()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("\n--- AUTRE ---");
+            Console.ResetColor();
+            Console.WriteLine("1. Créer une commande");
+            Console.WriteLine("2. Afficher les clients inactifs");
+            Console.WriteLine("3. Vérifier les retards");
+            Console.WriteLine("4. Retour");
+            var choix = Console.ReadLine();
+            List<Client> clients = gestionClients.GetClients();
+            List<Commande> commandes = gestionCommandes.GetCommandes();
+            Console.Clear();
+
+            switch (choix)
+            {
+                case "1":
+                    CreerCommande();
+                    break;
+                case "2":
+                    autre.AfficherClientsInactifs(clients, commandes);
+                    PauseEtRetourMenu();
+                    break;
+                case "3":
+                    var commande = new Commande(new Client(), new Cuisinier()); // Exemple de commande
+                    commande.Date = DateTime.Now.AddMinutes(-90); // Exemple: commande passée il y a 90 minutes
+                    commande.Statut = "En attente"; // Statut de la commande
+                    // Vérification du retard avec un délai de livraison de 2 heures
+                    string resultat = autre.VerifierRetard(commande, TimeSpan.FromHours(2)); // Spécification du délai de 2h
+                    Console.WriteLine(resultat);
+                    break;
+                case "4":
+                    AfficherMenu();
+                    break;
+                default:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Choix invalide.");
+                    Console.ResetColor();
+                    PauseEtRetourMenu();
+                    break;
+            }
         }
     }
 }
