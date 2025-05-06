@@ -82,7 +82,7 @@ namespace Pb_scientifique
                  @Prix, @Nationalite, @Regime, @CuisinierId);
                 SELECT LAST_INSERT_ID();";
 
-            int platId = Convert.ToInt32(DatabaseManager.ExecuteScalar(platQuery,
+            int platId = Convert.ToInt32(DatabaseManager.ExecuteNonQuery(platQuery,
                 new MySqlParameter("@Nom", plat.Nom),
                 new MySqlParameter("@Type", plat.Type),
                 new MySqlParameter("@Portions", plat.Portions),
@@ -97,13 +97,13 @@ namespace Pb_scientifique
             foreach (var ingredientNom in plat.Ingredients)
             {
                 string checkQuery = "SELECT Id FROM Ingredients WHERE Nom = @Nom";
-                var ingredientId = DatabaseManager.ExecuteScalar(checkQuery,
+                var ingredientId = DatabaseManager.ExecuteNonQuery(checkQuery,
                     new MySqlParameter("@Nom", ingredientNom));
 
                 if (ingredientId == null)
                 {
                     string insertQuery = "INSERT INTO Ingredients (Nom) VALUES (@Nom); SELECT LAST_INSERT_ID();";
-                    ingredientId = DatabaseManager.ExecuteScalar(insertQuery,
+                    ingredientId = DatabaseManager.ExecuteNonQuery(insertQuery,
                         new MySqlParameter("@Nom", ingredientNom));
                 }
 
