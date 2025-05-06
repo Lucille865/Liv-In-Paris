@@ -77,7 +77,54 @@ namespace Pb_scientifique
 
         }
 
+        /// <summary>
+        /// Modifie les informations d'un client dans la base de données
+        /// </summary>
+        /// <param name="identifiant">Identifiant du client à modifier</param>
+        /// <param name="nouveauClient">Nouvelles informations du client</param>
+        public void ModifierClient(string identifiant, Client nouveauClient)
+        {
+            string query = @"
+    UPDATE Clients 
+    SET 
+        Nom = @Nom,
+        Prenom = @Prenom,
+        Adresse = @Adresse,
+        Telephone = @Telephone,
+        Email = @Email,
+        MotDePasse = @MotDePasse,
+        TypeClient = @TypeClient,
+        NomEntreprise = @NomEntreprise,
+        Referent = @Referent
+    WHERE Identifiant = @Identifiant";
 
+            var parameters = new List<MySqlParameter>
+    {
+        new MySqlParameter("@Nom", nouveauClient.Nom),
+        new MySqlParameter("@Prenom", nouveauClient.Prenom ?? (object)DBNull.Value),
+        new MySqlParameter("@Adresse", nouveauClient.Adresse),
+        new MySqlParameter("@Telephone", nouveauClient.Telephone),
+        new MySqlParameter("@Email", nouveauClient.Email),
+        new MySqlParameter("@MotDePasse", nouveauClient.MotDePasse),
+        new MySqlParameter("@TypeClient", nouveauClient.TypeClient),
+        new MySqlParameter("@Identifiant", identifiant)
+    };
+
+            // Gestion conditionnelle des champs entreprise
+            if (nouveauClient.TypeClient == "Entreprise")
+            {
+                parameters.Add(new MySqlParameter("@NomEntreprise", nouveauClient.NomEntreprise ?? (object)DBNull.Value));
+                parameters.Add(new MySqlParameter("@Referent", nouveauClient.Referent ?? (object)DBNull.Value));
+            }
+            else
+            {
+                parameters.Add(new MySqlParameter("@NomEntreprise", DBNull.Value));
+                parameters.Add(new MySqlParameter("@Referent", DBNull.Value));
+            }
+
+            DatabaseManager.ExecuteNonQuery(query, parameters.ToArray());
+            ChargerClientsDepuisBDD(); // Recharge les clients après modification
+        }
 
         /// <summary>
         /// Affiche la liste des clients dans la console.
@@ -168,6 +215,14 @@ namespace Pb_scientifique
             }
 
             Console.WriteLine($"{clients.Count} clients chargés depuis la BDD."); // Log de débogage
+        }
+
+        /// <summary>
+        /// Trouve un client par son identifiant
+        /// </summary>
+        public Client GetClientParIdentifiant(string identifiant)
+        {
+            return clients.FirstOrDefault(c => c.Identifiant.Equals(identifiant, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

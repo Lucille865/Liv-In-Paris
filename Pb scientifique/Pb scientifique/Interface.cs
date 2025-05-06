@@ -87,8 +87,9 @@ namespace Pb_scientifique
             Console.ResetColor();
             Console.WriteLine("1. Ajouter un client");
             Console.WriteLine("2. Afficher tous les clients");
-            Console.WriteLine("3. Supprimer un client");
-            Console.WriteLine("4. Retour");
+            Console.WriteLine("3. Modifier un client");
+            Console.WriteLine("4. Supprimer un client");
+            Console.WriteLine("5. Retour");
             Console.Write("\nVotre choix : ");
 
             var choix = Console.ReadLine();
@@ -99,8 +100,9 @@ namespace Pb_scientifique
             {
                 case "1": AjouterClient(); break;
                 case "2": AfficherClients(); break;
-                case "3": SupprimerClient(); break;
-                case "4": AfficherMenu(); break;
+                case "3": ModifierClient(); break; 
+                case "4": SupprimerClient(); break;
+                case "5": AfficherMenu(); break;
                 default:
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("\nChoix invalide.");
@@ -170,6 +172,101 @@ namespace Pb_scientifique
             PauseEtRetourMenu();
         }
 
+        private void ModifierClient()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\n--- MODIFICATION CLIENT ---");
+            Console.ResetColor();
+
+            Console.Write("\nEntrez l'identifiant du client à modifier : ");
+            string identifiant = Console.ReadLine();
+
+            Client client = gestionClients.GetClientParIdentifiant(identifiant);
+
+            if (client == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Client non trouvé.");
+                Console.ResetColor();
+                PauseEtRetourMenu();
+                return;
+            }
+
+            // Créer une copie pour modification
+            Client modifications = new Client(
+                client.Nom,
+                client.Adresse,
+                client.Telephone,
+                client.Email,
+                client.Identifiant,
+                client.MotDePasse,
+                client.TypeClient)
+            {
+                Prenom = client.Prenom,
+                NomEntreprise = client.NomEntreprise,
+                Referent = client.Referent
+            };
+
+            Console.WriteLine("\nQue souhaitez-vous modifier ? (laisser vide pour ne pas changer)");
+
+            Console.Write($"Nom ({client.Nom}) : ");
+            string input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.Nom = input;
+
+            Console.Write($"Prénom ({client.Prenom ?? "N/A"}) : ");
+            input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.Prenom = input;
+
+            Console.Write($"Adresse ({client.Adresse}) : ");
+            input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.Adresse = input;
+
+            Console.Write($"Téléphone ({client.Telephone}) : ");
+            input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.Telephone = input;
+
+            Console.Write($"Email ({client.Email}) : ");
+            input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.Email = input;
+
+            Console.Write($"Mot de passe : ");
+            input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.MotDePasse = input;
+
+            // Modification du type client
+            Console.WriteLine($"Type actuel : {client.TypeClient}");
+            Console.WriteLine("Changer le type ? (O/N)");
+            if (Console.ReadLine().Equals("O", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine("1. Particulier");
+                Console.WriteLine("2. Entreprise");
+                Console.Write("Choix : ");
+                modifications.TypeClient = Console.ReadLine() == "2" ? "Entreprise" : "Particulier";
+            }
+
+            // Gestion des champs entreprise si nécessaire
+            if (modifications.TypeClient == "Entreprise")
+            {
+                Console.Write($"Nom entreprise ({client.NomEntreprise ?? "N/A"}) : ");
+                input = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(input)) modifications.NomEntreprise = input;
+
+                Console.Write($"Référent ({client.Referent ?? "N/A"}) : ");
+                input = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(input)) modifications.Referent = input;
+            }
+
+            // Appliquer les modifications
+            gestionClients.ModifierClient(identifiant, modifications);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nClient modifié avec succès !");
+            Console.ResetColor();
+
+            PauseEtRetourMenu();
+        }
+
         public void SupprimerClient()
         {
             Console.Clear();
@@ -197,11 +294,12 @@ namespace Pb_scientifique
             Console.ResetColor();
             Console.WriteLine("1. Ajouter un cuisinier");
             Console.WriteLine("2. Afficher tous les cuisiniers");
-            Console.WriteLine("3. Supprimer des cuisiniers");
-            Console.WriteLine("4. Afficher les plats par fréquence");
-            Console.WriteLine("5. Afficher le plat du jour");
-            Console.WriteLine("6. Afficher les clients servis");
-            Console.WriteLine("7. Retour");
+            Console.WriteLine("3. Modifier un cuisinier");
+            Console.WriteLine("4. Supprimer des cuisiniers");
+            Console.WriteLine("5. Afficher les plats par fréquence");
+            Console.WriteLine("6. Afficher le plat du jour");
+            Console.WriteLine("7. Afficher les clients servis");
+            Console.WriteLine("8. Retour");
             Console.Write("\nVotre choix : ");
 
             var choix = Console.ReadLine();
@@ -210,11 +308,12 @@ namespace Pb_scientifique
             {
                 case "1": AjouterCuisinier(); break;
                 case "2": AfficherCuisiniers(); break;
-                case "3": SupprimerCuisinier(); break;
-                case "4": AfficherPlatsParFrequence(); break;
-                case "5": AfficherPlatDuJour(); break;
-                case "6": AfficherClientsServis(); break;
-                case "7": AfficherMenu(); break;
+                case "3": ModifierCuisinier(); break;
+                case "4": SupprimerCuisinier(); break;
+                case "5": AfficherPlatsParFrequence(); break;
+                case "6": AfficherPlatDuJour(); break;
+                case "7": AfficherClientsServis(); break;
+                case "8": AfficherMenu(); break;
                 default:
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("\nChoix invalide.");
@@ -260,6 +359,183 @@ namespace Pb_scientifique
             PauseEtRetourMenu();
         }
 
+        private void ModifierCuisinier()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\n--- MODIFICATION CUISINIER ---");
+            Console.ResetColor();
+
+            // Afficher la liste des cuisiniers pour référence
+            gestionCuisiniers.AfficherCuisiniers();
+
+            Console.Write("\nEntrez le pseudo du cuisinier à modifier : ");
+            string identifiant = Console.ReadLine();
+
+            Cuisinier cuisinier = gestionCuisiniers.GetCuisinierByIdentifiant(identifiant);
+
+            if (cuisinier == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Cuisinier non trouvé.");
+                Console.ResetColor();
+                PauseEtRetourMenu();
+                return;
+            }
+
+            // Créer une copie pour modification
+            Cuisinier modifications = new Cuisinier(
+                cuisinier.Identifiant,
+                cuisinier.Nom,
+                cuisinier.Adresse,
+                cuisinier.Telephone,
+                cuisinier.Email,
+                cuisinier.MotDePasse)
+            {
+                Plats = cuisinier.Plats // Conserve la liste des plats existante
+            };
+
+            Console.WriteLine("\nQue souhaitez-vous modifier ? (laisser vide pour ne pas changer)");
+
+            Console.Write($"Pseudo ({cuisinier.Identifiant}) : ");
+            string input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.Identifiant = input;
+
+            Console.Write($"Nom ({cuisinier.Nom}) : ");
+            input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.Nom = input;
+
+            Console.Write($"Adresse ({cuisinier.Adresse}) : ");
+            input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.Adresse = input;
+
+            Console.Write($"Téléphone ({cuisinier.Telephone}) : ");
+            input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.Telephone = input;
+
+            Console.Write($"Email ({cuisinier.Email}) : ");
+            input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.Email = input;
+
+            Console.Write($"Mot de passe : ");
+            input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input)) modifications.MotDePasse = input;
+
+            // Gestion des plats (optionnel)
+            Console.WriteLine("\nGérer les plats ? (O/N)");
+            if (Console.ReadLine().Equals("O", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.Clear();
+                GererPlatsCuisinier(modifications);
+            }
+
+            // Appliquer les modifications
+            gestionCuisiniers.ModifierCuisinier(identifiant, modifications);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nCuisinier modifié avec succès !");
+            Console.ResetColor();
+
+            PauseEtRetourMenu();
+        }
+
+        private void GererPlatsCuisinier(Cuisinier cuisinier)
+        {
+            Console.WriteLine("\n--- GESTION DES PLATS ---");
+            Console.WriteLine("1. Ajouter un plat");
+            Console.WriteLine("2. Supprimer un plat");
+            Console.WriteLine("3. Voir la liste des plats");
+            Console.WriteLine("4. Terminer");
+            Console.Write("Choix : ");
+
+            string choix = Console.ReadLine();
+            Console.Clear();
+
+            switch (choix)
+            {
+                case "1":
+                    bool ajouterPlats = true;
+                    while (ajouterPlats)
+                    {
+                        Console.WriteLine("\n=== Ajout d'un plat ===");
+                        Console.Write("Nom du plat : ");
+                        string nomPlat = Console.ReadLine();
+
+                        Console.Write("Type (Entrée/Plat/Dessert) : ");
+                        string type = Console.ReadLine();
+
+                        Console.Write("Prix par personne : ");
+                        decimal prix = decimal.Parse(Console.ReadLine());
+
+                        Console.Write("Nationalité : ");
+                        string nationalite = Console.ReadLine();
+
+                        Console.Write("Régime alimentaire : ");
+                        string regime = Console.ReadLine();
+
+                        List<string> ingredients = new List<string>();
+                        Console.WriteLine("\nAjout des ingrédients (entrez 'fin' pour terminer) :");
+                        while (true)
+                        {
+                            Console.Write("Ingrédient : ");
+                            string ingredient = Console.ReadLine();
+                            if (ingredient.ToLower() == "fin")
+                                break;
+                            ingredients.Add(ingredient);
+                        }
+
+                        DateTime dateFabrication = DateTime.Now;
+                        DateTime datePeremption = dateFabrication.AddDays(30);
+
+                        // Création du plat
+                        Plat nouveauPlat = new Plat(
+                            nomPlat,
+                            type,
+                            1,
+                            DateTime.Now,
+                            DateTime.Now.AddDays(2),
+                            prix,
+                            nationalite,
+                            regime,
+                            ingredients
+                        );
+
+                        cuisinier.Plats.Add(nouveauPlat);
+
+                        // Demande si on continue
+                        Console.Write("Ajouter un autre plat? (o/n) ");
+                        ajouterPlats = Console.ReadLine().ToLower() == "o";
+                    }
+                    break;
+
+                case "2":
+                    Console.WriteLine("Plats disponibles :");
+                    for (int i = 0; i < cuisinier.Plats.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {cuisinier.Plats[i].Nom}");
+                    }
+                    Console.Write("Numéro du plat à supprimer : ");
+                    int index = int.Parse(Console.ReadLine()) - 1;
+                    if (index >= 0 && index < cuisinier.Plats.Count)
+                    {
+                        cuisinier.Plats.RemoveAt(index);
+                    }
+                    break;
+
+                case "3":
+                    Console.WriteLine("Liste des plats :");
+                    foreach (var plat in cuisinier.Plats)
+                    {
+                        Console.WriteLine($"- {plat.Nom} ({plat.Type}), Prix: {plat.PrixParPersonne}€");
+                    }
+                    break;
+            }
+
+            if (choix != "4")
+            {
+                GererPlatsCuisinier(cuisinier); // Rappel récursif
+            }
+        }
         private void SupprimerCuisinier()
         {
             Console.Clear();
@@ -592,6 +868,7 @@ namespace Pb_scientifique
                     // Vérification du retard avec un délai de livraison de 2 heures
                     string resultat = autre.VerifierRetard(commande, TimeSpan.FromHours(2)); // Spécification du délai de 2h
                     Console.WriteLine(resultat);
+                    PauseEtRetourMenu();
                     break;
                 case "4":
                     AfficherMenu();

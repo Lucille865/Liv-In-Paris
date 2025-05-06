@@ -431,5 +431,37 @@ namespace Pb_scientifique
             var cuisinier = cuisiniers.FirstOrDefault(c => c.Identifiant == identifiant); 
             return cuisinier;
         }
+
+        /// <summary>
+        /// Modifie les informations d'un cuisinier dans la base de données
+        /// </summary>
+        /// <param name="identifiant">Pseudo du cuisinier à modifier</param>
+        /// <param name="nouveauCuisinier">Nouvelles informations du cuisinier</param>
+        public void ModifierCuisinier(string identifiant, Cuisinier nouveauCuisinier)
+        {
+            string query = @"
+    UPDATE Cuisiniers 
+    SET 
+        Nom = @Nom,
+        Adresse = @Adresse,
+        Telephone = @Telephone,
+        Email = @Email,
+        MotDePasse = @MotDePasse,
+    WHERE Identifiant = @Identifiant";
+
+            var parameters = new List<MySqlParameter>
+    {
+        new MySqlParameter("@Nom", nouveauCuisinier.Nom),
+        new MySqlParameter("@Adresse", nouveauCuisinier.Adresse),
+        new MySqlParameter("@Telephone", nouveauCuisinier.Telephone),
+        new MySqlParameter("@Email", nouveauCuisinier.Email),
+        new MySqlParameter("@MotDePasse", nouveauCuisinier.MotDePasse),
+        new MySqlParameter("@Pseudo", identifiant)
+    };
+
+            DatabaseManager.ExecuteNonQuery(query, parameters.ToArray());
+            GetTousCuisiniers(); // Recharge les cuisiniers après modification
+        }
+
     }
 }
