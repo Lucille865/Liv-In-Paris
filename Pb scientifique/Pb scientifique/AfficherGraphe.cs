@@ -109,13 +109,14 @@ namespace Pb_scientifique
                                 {
                                     T suivantId = parseFunc(parties[3].Trim());
                                     var suivant = Noeuds.FirstOrDefault(n => n.Id.Equals(suivantId));
+                                    int temps = int.Parse(parties[4].Trim());
 
                                     if (suivant != null && source.Ligne == suivant.Ligne)
                                     {
                                         if (!Liens.Any(l => (l.Noeud1.Id.Equals(source.Id) && l.Noeud2.Id.Equals(suivant.Id)) ||
                                                             (l.Noeud1.Id.Equals(suivant.Id) && l.Noeud2.Id.Equals(source.Id))))
                                         {
-                                            Liens.Add(new Lien<T>(source, suivant));
+                                            Liens.Add(new Lien<T>(source, suivant, temps));
                                         }
                                     }
                                 }

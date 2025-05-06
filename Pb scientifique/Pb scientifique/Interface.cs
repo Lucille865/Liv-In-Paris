@@ -341,9 +341,7 @@ namespace Pb_scientifique
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Impossible de calculer le plus court chemin à cause d'un cycle de poids négatif.");
-                Console.ResetColor();
             }
 
             PauseEtRetourMenu();

@@ -10,11 +10,13 @@ namespace Pb_scientifique
     {
         public Noeud<T> Noeud1 { get; }
         public Noeud<T> Noeud2 { get; }
+        public int Temps { get; set; }
 
-        public Lien(Noeud<T> n1, Noeud<T> n2)
+        public Lien(Noeud<T> n1, Noeud<T> n2, int temps)
         {
             Noeud1 = n1;
             Noeud2 = n2;
+            Temps = temps;
 
         }
         public string toString()
