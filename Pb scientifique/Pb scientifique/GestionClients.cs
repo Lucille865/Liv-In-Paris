@@ -1,6 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Linq;
 using System.Transactions;
 
 namespace Pb_scientifique
@@ -82,22 +84,52 @@ namespace Pb_scientifique
         /// </summary>
         public void AfficherClients()
         {
-            ChargerClientsDepuisBDD(); // Recharge à chaque affichage
+            Console.WriteLine("1. Trier par ordre alphabétique (Nom)");
+            Console.WriteLine("2. Trier par adresse");
+            Console.WriteLine("3. Afficher sans tri");
+            Console.WriteLine("4. Retour");
+            Console.Write("\nVotre choix : ");
 
-            if (clients.Count == 0)
+            int choix = Convert.ToInt32(Console.ReadLine());
+            switch (choix)
             {
-                Console.WriteLine("Aucun client dans la base de données.");
-                return;
+                case 1:
+                    // Tri alphabétique par nom puis prénom
+                    clients = clients.OrderBy(c => c.Nom).ThenBy(c => c.Prenom).ToList();
+                    break;
+
+                case 2:
+                    // Tri par adresse
+                    clients = clients.OrderBy(c => c.Adresse).ToList();
+                    break;
+
+                case 3:
+                    // Pas de tri
+                    break;
+
+                default:
+                    // Si un critère invalide est passé, on applique un tri par défaut (alphabétique)
+                    clients = clients.OrderBy(c => c.Nom).ThenBy(c => c.Prenom).ToList();
+                    break;
             }
 
+            // Afficher les clients
             Console.WriteLine("Liste des clients:");
             Console.WriteLine(new string('-', 60));
 
+            // Affichage des informations de chaque client
             foreach (var client in clients)
             {
                 Console.WriteLine($"{client.Identifiant} | {client.Nom} | {client.Prenom ?? "N/A"} | {client.Email} | {client.TypeClient}");
             }
+
+            // Afficher un message si la liste est vide
+            if (clients.Count == 0)
+            {
+                Console.WriteLine("Aucun client à afficher.");
+            }
         }
+
 
         /// <summary>
         /// Charge tous les clients depuis la base de données vers la liste interne.

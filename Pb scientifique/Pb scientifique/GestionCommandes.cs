@@ -8,7 +8,7 @@ namespace Pb_scientifique
 {
     public class GestionCommandes
     {
-        private List<Commande> commandes = new List<Commande>();
+        public List<Commande> commandes = new List<Commande>();
         private const string filePath = "Commandes.txt";
         private readonly GestionClients gestionClients;
         private readonly GestionCuisiniers gestionCuisiniers;
@@ -338,7 +338,7 @@ namespace Pb_scientifique
         /// Charge la liste des commandes depuis le fichier de sauvegarde.
         /// </summary>
         /// <returns>Liste des commandes chargées.</returns>
-        private List<Commande> ChargerCommandes()
+        public List<Commande> ChargerCommandes()
         {
             List<Commande> loadedCommandes = new List<Commande>();
 

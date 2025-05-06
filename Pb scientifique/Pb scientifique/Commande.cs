@@ -25,6 +25,7 @@ namespace Pb_scientifique
             Cuisinier = cuisinier;
         }
 
+        
         private decimal CalculerPrix()
         {
             decimal total = 0;

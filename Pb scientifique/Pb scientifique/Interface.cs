@@ -17,6 +17,7 @@ namespace Pb_scientifique
         public GestionCommandes gestionCommandes;
         Graphe<int> graphe = new Graphe<int>();
         private RelationVisualizer visualiseur;
+        private Autre autre;
 
         public Interface()
         {
@@ -24,6 +25,7 @@ namespace Pb_scientifique
             gestionCuisiniers = new GestionCuisiniers();
             gestionCommandes = new GestionCommandes(gestionClients, gestionCuisiniers);
             visualiseur = new RelationVisualizer(gestionClients, gestionCuisiniers);
+            autre = new Autre();
         }
 
         public void AfficherMenu()
@@ -82,17 +84,23 @@ namespace Pb_scientifique
             Console.WriteLine("1. Ajouter un client");
             Console.WriteLine("2. Afficher tous les clients");
             Console.WriteLine("3. Supprimer un client");
-            Console.WriteLine("4. Retour");
+            Console.WriteLine("4. Afficher les clients inactifs");
+            Console.WriteLine("5. Retour");
             Console.Write("\nVotre choix : ");
 
             var choix = Console.ReadLine();
+            List<Client> clients = gestionClients.GetClients();
+            List<Commande> commandes = gestionCommandes.GetCommandes();
 
             switch (choix)
             {
                 case "1": AjouterClient(); break;
                 case "2": AfficherClients(); break;
                 case "3": SupprimerClient(); break;
-                case "4": AfficherMenu(); break;
+                case "4": autre.AfficherClientsInactifs(clients,commandes); 
+                          PauseEtRetourMenu(); 
+                          break;
+                case "5": AfficherMenu(); break;
                 default:
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("\nChoix invalide.");
@@ -275,8 +283,10 @@ namespace Pb_scientifique
             Console.ResetColor();
             Console.WriteLine("1. Créer une commande");
             Console.WriteLine("2. Afficher toutes les commandes");
-            Console.WriteLine("3. Retour");
+            Console.WriteLine("3. Vérifier les retards");
+            Console.WriteLine("4. Retour");
             var choix = Console.ReadLine();
+            Console.Clear();
 
             switch (choix)
             {
@@ -287,6 +297,14 @@ namespace Pb_scientifique
                     AfficherCommandes();
                     break;
                 case "3":
+                    var commande = new Commande(new Client(), new Cuisinier()); // Exemple de commande
+                    commande.Date = DateTime.Now.AddMinutes(-90); // Exemple: commande passée il y a 90 minutes
+                    commande.Statut = "En attente"; // Statut de la commande
+                    // Vérification du retard avec un délai de livraison de 2 heures
+                    string resultat = autre.VerifierRetard(commande, TimeSpan.FromHours(2)); // Spécification du délai de 2h
+                    Console.WriteLine(resultat);
+                    break;
+                case "4":
                     AfficherMenu();
                     break;
                 default:

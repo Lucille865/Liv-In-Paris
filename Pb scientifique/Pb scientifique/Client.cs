@@ -1,4 +1,5 @@
 ﻿using System;
+using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,23 @@ namespace Pb_scientifique
         {
             Console.WriteLine($"Nom: {Nom}, Adresse: {Adresse}, Téléphone: {Telephone}, Email: {Email}" );
             
+        }
+
+        public decimal CalculerMontantTotalAchats(Client client, List<Commande> commandes)
+        {
+            decimal clientTotal = 0;
+
+            // Parcours de toutes les commandes
+            foreach (var commande in commandes)
+            {
+                // Vérifier si cette commande appartient au client
+                if (commande.Client.Identifiant == client.Identifiant)
+                {
+                    clientTotal += commande.TotalPrix; // Ajouter le prix de la commande au total
+                }
+            }
+
+            return clientTotal;
         }
     }
 }
