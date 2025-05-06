@@ -20,6 +20,7 @@ namespace Pb_scientifique
         /// </summary>
         private Dictionary<T, List<T>> liaisons = new();
 
+
         /// <summary>
         /// Ajoute une station au graphe.
         /// </summary>
@@ -42,10 +43,12 @@ namespace Pb_scientifique
         /// </summary>
         /// <param name="id1">ID de la première station.</param>
         /// <param name="id2">ID de la deuxième station.</param>
-        public void AjouterLiaison(T id1, T id2)
+        public void AjouterLiaison(T id1, T id2, int temps)
         {
             if (!Noeuds.ContainsKey(id1) || !Noeuds.ContainsKey(id2))
                 return; // Vérification pour éviter des erreurs
+
+            var lien = new Lien<T>(Noeuds[id1], Noeuds[id2], temps);
 
             if (!liaisons[id1].Contains(id2))
                 liaisons[id1].Add(id2);
@@ -94,9 +97,10 @@ namespace Pb_scientifique
             {
                 var elements = ligne.Split(';');
                 if (elements.Length >= 5 && int.TryParse(elements[0], out int idStation) &&
-                    int.TryParse(elements[3], out int voisinId))
+                    int.TryParse(elements[3], out int voisinId) &&
+                    int.TryParse(elements[4], out int temps))
                 {
-                    AjouterLiaison((T)(object)idStation, (T)(object)voisinId);
+                    AjouterLiaison((T)(object)idStation, (T)(object)voisinId, temps);
                 }
             }
         }

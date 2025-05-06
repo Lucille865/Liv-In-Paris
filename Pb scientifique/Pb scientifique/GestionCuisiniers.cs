@@ -426,6 +426,10 @@ namespace Pb_scientifique
             return candidats[index];
         }
 
-        
+        public Cuisinier GetCuisinierByIdentifiant(string identifiant)
+        {
+            var cuisinier = cuisiniers.FirstOrDefault(c => c.Identifiant == identifiant); 
+            return cuisinier;
+        }
     }
 }

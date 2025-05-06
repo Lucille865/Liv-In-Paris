@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,12 @@ namespace Pb_scientifique
         public string Identifiant { get; set; }
         public string MotDePasse { get; set; }
         public List<Plat> Plats { get; set; } = new List<Plat>();
-        public List<Livraison> Livraisons { get; set; } = new List<Livraison>();
+
+        public List<Livraison> Livraisons { get; set; } 
+        public List<Commande> Commandes { get; set; } = new List<Commande> { };
+
+        private GestionCuisiniers gestionCuisiniers;
+        private GestionCommandes gestionCommandes;
 
         public Cuisinier() { }
         public Cuisinier(string nom, string adresse, string telephone, string email, string identifiant, string motDePasse)
@@ -91,5 +97,39 @@ namespace Pb_scientifique
                 Console.WriteLine("Aucun plat du jour.");
             }
         }
+
+        public void AjouterCommande(Commande commande)
+        {
+            if (Commandes == null) // Si la liste n'est pas initialisée
+                Commandes = new List<Commande>();
+
+            Commandes.Add(commande);
+        }
+
+        /// <summary>
+        /// Affiche les clients servis par le cuisinier.
+        /// </summary>
+        /*public void AfficherClientsServis()
+        {
+
+                // Récupère les commandes du cuisinier depuis GestionCommandes
+                var commandesCuisinier = gestionCommandes.GetCommandes()
+                    .Where(c => c.Cuisinier?.Identifiant == identifiant).ToList();
+
+                if (commandesCuisinier.Any())
+                {
+                    Console.WriteLine("Clients servis :");
+                    foreach (var commande in commandesCuisinier)
+                    {
+                        Console.WriteLine($"- Client: {commande.Client.Nom}, Plat: {commande.LignesCommande.First().Plat.Nom}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Ce cuisinier n'a pas servi de clients (via GestionCommandes).");
+                }
+            
+        }*/
+
     }
 }

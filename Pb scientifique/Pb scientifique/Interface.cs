@@ -198,7 +198,10 @@ namespace Pb_scientifique
             Console.WriteLine("1. Ajouter un cuisinier");
             Console.WriteLine("2. Afficher tous les cuisiniers");
             Console.WriteLine("3. Supprimer des cuisiniers");
-            Console.WriteLine("4. Retour");
+            Console.WriteLine("4. Afficher les plats par fréquence");
+            Console.WriteLine("5. Afficher le plat du jour");
+            Console.WriteLine("6. Afficher les clients servis");
+            Console.WriteLine("7. Retour");
             Console.Write("\nVotre choix : ");
 
             var choix = Console.ReadLine();
@@ -208,7 +211,10 @@ namespace Pb_scientifique
                 case "1": AjouterCuisinier(); break;
                 case "2": AfficherCuisiniers(); break;
                 case "3": SupprimerCuisinier(); break;
-                case "4": AfficherMenu(); break;
+                case "4": AfficherPlatsParFrequence(); break;
+                case "5": AfficherPlatDuJour(); break;
+                case "6": AfficherClientsServis(); break;
+                case "7": AfficherMenu(); break;
                 default:
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("\nChoix invalide.");
@@ -274,6 +280,86 @@ namespace Pb_scientifique
 
             PauseEtRetourMenu();
         }
+
+        private void AfficherPlatsParFrequence()
+        {
+            Console.Clear();
+            Console.Write("Entrez l'identifiant (pseudo) du cuisinier : ");
+            string identifiant = Console.ReadLine();
+
+            var cuisinier = gestionCuisiniers.GetCuisinierByIdentifiant(identifiant); // Méthode à implémenter dans GestionCuisiniers
+            if (cuisinier != null)
+            {
+                cuisinier.AfficherPlatsParFrequence();  // Appel de la méthode sur l'objet cuisinier
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Cuisinier non trouvé.");
+                Console.ResetColor();
+            }
+
+            PauseEtRetourMenu();
+        }
+
+        private void AfficherPlatDuJour()
+        {
+            Console.Clear();
+            Console.Write("Entrez l'identifiant (pseudo) du cuisinier : ");
+            string identifiant = Console.ReadLine();
+
+            var cuisinier = gestionCuisiniers.GetCuisinierByIdentifiant(identifiant); 
+            if (cuisinier != null)
+            {
+                cuisinier.AfficherPlatDuJour();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Cuisinier non trouvé.");
+                Console.ResetColor();
+            }
+
+            PauseEtRetourMenu();
+        }
+
+        /// <summary>
+        /// Affiche les clients servis par le cuisinier.
+        /// </summary>
+        public void AfficherClientsServis()
+        {
+            Console.Clear();
+            Console.Write("Entrez l'identifiant du cuisinier : ");
+            string identifiant = Console.ReadLine();
+
+            var cuisinier = gestionCuisiniers.GetCuisinierByIdentifiant(identifiant);
+            if (cuisinier != null)
+            {
+                var commandesCuisinier = gestionCommandes.GetCommandes()
+                    .Where(c => c.Cuisinier?.Identifiant == identifiant).ToList();
+
+                if (commandesCuisinier.Any())
+                {
+                    Console.WriteLine("Clients servis :");
+                    foreach (var commande in commandesCuisinier)
+                    {
+                        Console.WriteLine($"- Client: {commande.Client.Nom}, Plat: {commande.LignesCommande.First().Plat.Nom}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Ce cuisinier n'a pas servi de clients.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Cuisinier introuvable.");
+            }
+
+            Console.WriteLine("\nAppuyez sur une touche pour revenir au menu...");
+            Console.ReadKey();
+        }
+
 
         private void GérerCommandes()
         {
@@ -362,9 +448,7 @@ namespace Pb_scientifique
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Impossible de calculer le plus court chemin à cause d'un cycle de poids négatif.");
-                Console.ResetColor();
             }
 
             PauseEtRetourMenu();
@@ -389,9 +473,10 @@ namespace Pb_scientifique
                 Console.WriteLine("1. Chiffre d'affaires par cuisinier");
                 Console.WriteLine("2. Plats les plus populaires");
                 Console.WriteLine("3. Nombre moyen de commandes par client");
-                Console.WriteLine("4. Graphe des relations");
-                Console.WriteLine("5. Exportation en XML");
-                Console.WriteLine("6. Revenir au menu principal");
+                Console.WriteLine("4. Afficher le graphe des stations");
+                Console.WriteLine("5. Graphe des relations");
+                Console.WriteLine("6. Exportation en XML");
+                Console.WriteLine("7. Revenir au menu principal");
                 Console.Write("\nVotre choix : ");
 
                 switch (Console.ReadLine())
@@ -406,16 +491,21 @@ namespace Pb_scientifique
                         AfficherMoyenneCommandes(statistiques);
                         break;
                     case "4":
+                        var graphe = new AfficheGraphe<int>();
+                        graphe.ChargerDepuisFichier("MetroParisNoeuds.txt", "MetroParisArcs.txt", int.Parse);
+                        graphe.DessinerGraphe("metro.png");
+                        break;
+                    case "5":
                         visualiseur.GenererGrapheComplet(gestionCommandes.GetCommandes());
                         Process.Start("explorer.exe", "relations.png");
                         break;
-                    case "5":
+                    case "6":
                         var exportateur = new Exportateur();
                         exportateur.ExporterToutesLesDonnees();
                         Process.Start("explorer.exe", "relations.png");
                         Console.WriteLine("Données exportées");
                         break;
-                    case "6":
+                    case "7":
                         return;
                     default:
                         Console.ForegroundColor = ConsoleColor.Red;
