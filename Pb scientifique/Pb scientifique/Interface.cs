@@ -40,6 +40,10 @@ namespace Pb_scientifique
             bool continuer = true;
             while (continuer)
             {
+                var graphe = new AfficheGraphe<int>();
+                graphe.ChargerDepuisFichier("MetroParisNoeuds.txt", "MetroParisArcs.txt", int.Parse);
+                graphe.DessinerGraphe("metro.png");
+
                 Console.WriteLine("=== Bienvenue dans l'application Liv'in Paris ! ===");
                 Console.WriteLine("Que souhaitez-vous faire ?");
                 Console.WriteLine("1. Gérer les Clients");
