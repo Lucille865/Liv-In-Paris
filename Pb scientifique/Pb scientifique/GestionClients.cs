@@ -1,91 +1,141 @@
-﻿using MySqlX.XDevAPI;
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Pb_scientifique
 {
+    /// <summary>
+    /// Gère les opérations liées aux clients de la base de données LivInParis.
+    /// </summary>
     public class GestionClients
     {
-        public List<Client> clients = new List<Client>();
-        private const string filePath = "Clients.txt";
 
+        public List<Client> clients;
+
+        /// <summary>
+        /// Initialise une nouvelle instance de <see cref="GestionClients"/> et charge les clients depuis la base de données.
+        /// </summary>
         public GestionClients()
         {
-            clients = new List<Client>(); // Assurer que la liste est initialisée
-            clients = ChargerClients();
+            clients = new List<Client>();
+            ChargerClientsDepuisBDD();
         }
 
+        /// <summary>
+        /// Retourne la liste des clients actuellement en mémoire.
+        /// </summary>
         public List<Client> GetClients()
         {
-            return clients; // Retourne la liste interne des clients
+            return clients;
         }
 
-        // Méthode pour ajouter un client
+        /// <summary>
+        /// Ajoute un client à la base de données, avec gestion conditionnelle des champs entreprise.
+        /// </summary>
+        /// /// <param name="client">Client à ajouter.</param>
         public void AjouterClient(Client client)
         {
-            clients.Add(client);
-            SauvegarderClients();
-            Console.WriteLine($"Client ajouté : {client.Nom}");
+ 
+            string query = @"
+            INSERT INTO Clients 
+            (Nom, Prenom, Adresse, Telephone, Email, Identifiant, MotDePasse, TypeClient, NomEntreprise, Referent) 
+            VALUES 
+            (@Nom, @Prenom, @Adresse, @Telephone, @Email, @Identifiant, @MotDePasse, @TypeClient, @NomEntreprise, @Referent)";
+
+            var parameters = new List<MySqlParameter>
+            {
+                new MySqlParameter("@Nom", client.Nom),
+                new MySqlParameter("@Prenom", client.Prenom ?? (object)DBNull.Value),
+                new MySqlParameter("@Adresse", client.Adresse),
+                new MySqlParameter("@Telephone", client.Telephone),
+                new MySqlParameter("@Email", client.Email),
+                new MySqlParameter("@Identifiant", client.Identifiant),
+                new MySqlParameter("@MotDePasse", client.MotDePasse),
+                new MySqlParameter("@TypeClient", client.TypeClient)
+            };
+
+            // Si le client est de type "Entreprise", ajouter les informations supplémentaires
+            if (client.TypeClient == "Entreprise")
+            {
+                parameters.Add(new MySqlParameter("@NomEntreprise", client.NomEntreprise ?? (object)DBNull.Value));
+                parameters.Add(new MySqlParameter("@Referent", client.Referent ?? (object)DBNull.Value));
+            }
+            else
+            {
+                // Pour un client particulier, on passe NULL pour ces deux champs
+                parameters.Add(new MySqlParameter("@NomEntreprise", DBNull.Value));
+                parameters.Add(new MySqlParameter("@Referent", DBNull.Value));
+            }
+
+            // Exécution de la requête avec tous les paramètres
+            DatabaseManager.ExecuteNonQuery(query, parameters.ToArray());
+            ChargerClientsDepuisBDD(); // Recharge immédiatement après ajout
+
+
         }
 
-        // Méthode pour afficher tous les clients
+
+
+        /// <summary>
+        /// Affiche la liste des clients dans la console.
+        /// </summary>
         public void AfficherClients()
         {
+            ChargerClientsDepuisBDD(); // Recharge à chaque affichage
+
             if (clients.Count == 0)
             {
-                Console.WriteLine("Aucun client à afficher.");
+                Console.WriteLine("Aucun client dans la base de données.");
                 return;
             }
 
+            Console.WriteLine("Liste des clients:");
+            Console.WriteLine(new string('-', 60));
+
             foreach (var client in clients)
             {
-                Console.WriteLine($"Nom: {client.Nom}, Adresse: {client.Adresse}, Type: {client.TypeClient}, Email: {client.Email}");
+                Console.WriteLine($"{client.Identifiant} | {client.Nom} | {client.Prenom ?? "N/A"} | {client.Email} | {client.TypeClient}");
             }
         }
-        private void SauvegarderClients()
-        {
-            using (StreamWriter writer = new StreamWriter(filePath))
-            {
-                writer.WriteLine("Nom\tAdresse\tTelephone\tEmail\tPseudo\tMotDePasse\tTypeClient"); // En-tête
 
-                foreach (var client in clients)
-                {
-                    writer.WriteLine($"{client.Nom}\t{client.Adresse}\t{client.Telephone}\t{client.Email}\t{client.Identifiant}\t{client.MotDePasse}\t{client.TypeClient}");
-                }
-            }
-        }
-        private List<Client> ChargerClients()
+        /// <summary>
+        /// Charge tous les clients depuis la base de données vers la liste interne.
+        /// </summary>
+        private void ChargerClientsDepuisBDD()
         {
-            List<Client> listeClients = new List<Client>();
+            clients.Clear();
+            string query = "SELECT * FROM Clients";
 
-            if (File.Exists(filePath))
+            using(var conn = DatabaseManager.GetConnection())
             {
-                using (StreamReader reader = new StreamReader(filePath))
+                conn.Open();
+                using (var cmd = new MySqlCommand(query, conn))
+                using (var reader = cmd.ExecuteReader())
                 {
-                    string line;
-                    bool firstLine = true;
-                    while ((line = reader.ReadLine()) != null)
+                    while (reader.Read())
                     {
-                        if (firstLine) // Ignore l'en-tête
+                        var client = new Client(
+                            reader["Nom"].ToString(),
+                            reader["Adresse"].ToString(),
+                            reader["Telephone"].ToString(),
+                            reader["Email"].ToString(),
+                            reader["Identifiant"].ToString(),
+                            reader["MotDePasse"].ToString(),
+                            reader["TypeClient"].ToString()
+                        )
                         {
-                            firstLine = false;
-                            continue;
-                        }
-                        string[] data = line.Split('\t'); // Séparateur tabulation
-                        if (data.Length == 7) // Vérification
-                        {
-                            var client = new Client(data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
-                            listeClients.Add(client);
+                            Prenom = reader["Prenom"] is DBNull ? null : reader["Prenom"].ToString(),
+                            NomEntreprise = reader["NomEntreprise"] is DBNull ? null : reader["NomEntreprise"].ToString(),
+                            Referent = reader["Referent"] is DBNull ? null : reader["Referent"].ToString()
+                        };
 
-                        }
+                        clients.Add(client);
                     }
                 }
-
             }
-            return listeClients;
+
+            Console.WriteLine($"{clients.Count} clients chargés depuis la BDD."); // Log de débogage
         }
     }
 }

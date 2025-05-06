@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySqlX.XDevAPI;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,6 +14,10 @@ namespace Pb_scientifique
         private readonly GestionCuisiniers gestionCuisiniers;
         Graphe<int> graphe = new Graphe<int>();
 
+        /// <summary>
+        /// Initialise le gestionnaire de commandes avec les gestionnaires de clients et cuisiniers.
+        /// Charge également les commandes depuis un fichier au démarrage.
+        /// </summary>
         public GestionCommandes(GestionClients gestionClients, GestionCuisiniers gestionCuisiniers)
         {
             this.gestionClients = gestionClients;
@@ -20,11 +25,17 @@ namespace Pb_scientifique
             commandes = ChargerCommandes();
         }
 
+        /// <summary>
+        /// Récupère la liste des commandes en cours.
+        /// </summary>
         public List<Commande> GetCommandes()
         {
             return commandes; // Retourne la liste interne des commandes
         }
 
+        /// <summary>
+        /// Permet de créer une commande pour un client, ajoutant des plats et leur gestion.
+        /// </summary>
         public void CreerCommande(Client client)
         {
             Commande nouvelleCommande = new Commande(client, null);
@@ -188,6 +199,12 @@ namespace Pb_scientifique
             
         }
 
+        /// <summary>
+        /// Affiche le trajet le plus court entre le cuisinier et une destination donnée.
+        /// Utilise le graphe de métro pour calculer et afficher le chemin.
+        /// </summary>
+        /// <param name="depart">L'adresse de départ (cuisinier).</param>
+        /// <param name="arrivee">L'adresse d'arrivée (destination).</param>
         private void AfficherPlusCourtChemin(string depart, string arrivee)
         {
             try
@@ -234,13 +251,31 @@ namespace Pb_scientifique
             }
         }
 
+        /// <summary>
+        /// Récupère tous les plats disponibles dans les cuisiniers enregistrés.
+        /// </summary>
+        /// <returns>Liste des plats disponibles.</returns
         private List<Plat> GetPlatsDisponibles()
         {
-        return gestionCuisiniers.cuisiniers
-            .SelectMany(c => c.Plats)
-            .ToList();
+            List<Plat> platsDisponibles = new List<Plat>();
+
+            // Parcours de chaque cuisinier
+            foreach (var cuisinier in gestionCuisiniers.cuisiniers)
+            {
+                // Ajoute les plats du cuisinier à la liste des plats disponibles
+                foreach (var plat in cuisinier.Plats)
+                {
+                    platsDisponibles.Add(plat);
+                }
+            }
+
+            return platsDisponibles;
         }
 
+        /// <summary>
+        /// Ajoute une nouvelle commande à la liste et la sauvegarde dans le fichier.
+        /// </summary>
+        /// <param name="commande">La commande à ajouter.</param>
         public void AjouterCommande(Commande commande)
         {
             commandes.Add(commande);
@@ -248,6 +283,9 @@ namespace Pb_scientifique
             Console.WriteLine("Commande ajoutée.");
         }
 
+        /// <summary>
+        /// Affiche la commande
+        /// </summary>
         public void AfficherCommandes()
         {
             if (commandes.Count == 0)
@@ -265,6 +303,9 @@ namespace Pb_scientifique
             }
         }
 
+        /// <summary>
+        /// Sauvegarde la liste des commandes dans un fichier.
+        /// </summary>
         private void SauvegarderCommandes()
         {
             try
@@ -293,6 +334,10 @@ namespace Pb_scientifique
             }
         }
 
+        // <summary>
+        /// Charge la liste des commandes depuis le fichier de sauvegarde.
+        /// </summary>
+        /// <returns>Liste des commandes chargées.</returns>
         private List<Commande> ChargerCommandes()
         {
             List<Commande> loadedCommandes = new List<Commande>();

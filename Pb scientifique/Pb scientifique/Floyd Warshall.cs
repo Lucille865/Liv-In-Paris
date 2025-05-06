@@ -12,6 +12,10 @@ namespace Pb_scientifique
         private Dictionary<T, Dictionary<T, double>> distances;
         private Dictionary<T, Dictionary<T, T>> predecesseurs;
 
+        /// <summary>
+        /// Initialise une nouvelle instance de la classe FloydWarshall avec le graphe donné.
+        /// </summary>
+        /// <param name="graphe">Le graphe sur lequel appliquer l’algorithme.</param>
         public FloydWarshall(Graphe<T> graphe)
         {
             this.graphe = graphe;
@@ -19,6 +23,10 @@ namespace Pb_scientifique
             predecesseurs = new Dictionary<T, Dictionary<T, T>>();
         }
 
+        /// <summary>
+        /// Calcule les plus courts chemins entre toutes les paires de nœuds dans le graphe.
+        /// Remplit les matrices de distances et de prédécesseurs.
+        /// </summary>
         public void CalculerPlusCourtsChemins()
         {
             // Initialisation des distances et des prédécesseurs
@@ -63,6 +71,12 @@ namespace Pb_scientifique
             }
         }
 
+        /// <summary>
+        /// Reconstruit le plus court chemin entre deux nœuds, après exécution de l’algorithme.
+        /// </summary>
+        /// <param name="depart">Le nœud de départ.</param>
+        /// <param name="arrivee">Le nœud d’arrivée.</param>
+        /// <returns>Une liste représentant le chemin du départ à l’arrivée. Retourne une liste vide si aucun chemin n’existe.</returns>
         public List<T> GetChemin(T depart, T arrivee)
         {
             List<T> chemin = new();

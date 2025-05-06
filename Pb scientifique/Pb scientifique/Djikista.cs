@@ -17,6 +17,11 @@ namespace Pb_scientifique
         private Graphe<T> graphe;
         public Dictionary<T, double> Distances => distances;
 
+        /// <summary>
+        /// Initialise une nouvelle instance de l'algorithme de Dijkstra et exécute le calcul à partir du nœud de départ.
+        /// </summary>
+        /// <param name="graphe">Le graphe sur lequel exécuter l'algorithme.</param>
+        /// <param name="depart">Le nœud de départ.</param>
         public Dijkstra(Graphe<T> graphe, T depart)
         {
             this.graphe = graphe;
@@ -25,6 +30,7 @@ namespace Pb_scientifique
             visites = new HashSet<T>();
             filePriorite = new PriorityQueue<T, double>();
 
+            // Initialisation : toutes les distances sont infinies sauf le point de départ
             foreach (var noeud in graphe.Noeuds.Values)
             {
                 distances[noeud.Id] = double.PositiveInfinity;
@@ -68,6 +74,11 @@ namespace Pb_scientifique
             }
         }
 
+        /// <summary>
+        /// Reconstruit le chemin le plus court entre le nœud de départ et un nœud d'arrivée donné.
+        /// </summary>
+        /// <param name="arrivee">Le nœud de destination.</param>
+        /// <returns>Une liste des noms des stations formant le chemin le plus court.</returns>
         public List<string> GetChemin(T arrivee)
         {
             List<string> chemin = new List<string>();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -9,6 +10,11 @@ using System.Threading.Tasks;
 
 namespace Pb_scientifique
 {
+
+    /// <summary>
+    /// Classe représentant l'interface principale de l'application Liv'in Paris.
+    /// Gère l'interaction avec l'utilisateur pour la gestion des clients, cuisiniers, commandes et statistiques.
+    /// </summary>
     public class Interface
     {
         public GestionClients gestionClients;
@@ -25,6 +31,9 @@ namespace Pb_scientifique
             visualiseur = new RelationVisualizer(gestionClients, gestionCuisiniers);
         }
 
+        // <summary>
+        /// Affiche le menu principal et permet à l'utilisateur de choisir une action à effectuer.
+        /// </summary>
         public void AfficherMenu()
         {
             Console.Clear();
@@ -89,14 +98,18 @@ namespace Pb_scientifique
             }
         }
 
-
+        /// <summary>
+        /// Affiche le menu de gestion des clients.
+        /// Permet d'ajouter, afficher ou supprimer des clients.
+        /// </summary>
         private void GérerClients()
         {
             Console.Clear();
             Console.WriteLine("=== CLIENTS ===");
             Console.WriteLine("1. Ajouter un client");
             Console.WriteLine("2. Afficher tous les clients");
-            Console.WriteLine("3. Retour");
+            Console.WriteLine("3. Supprimer un client");
+            Console.WriteLine("4. Retour");
             var choix = Console.ReadLine();
 
             switch (choix)
@@ -108,6 +121,9 @@ namespace Pb_scientifique
                     AfficherClients();
                     break;
                 case "3":
+                    SupprimerClient();
+                    break;
+                case "4":
                     AfficherMenu();
                     break;
                 default:
@@ -116,6 +132,9 @@ namespace Pb_scientifique
             }
         }
 
+        /// <summary>
+        /// Permet d'ajouter un nouveau client à la base de données.
+        /// </summary>
         private void AjouterClient()
         {
             Console.Clear();
@@ -130,45 +149,81 @@ namespace Pb_scientifique
             Console.WriteLine("Email du client : ");
             string email = Console.ReadLine();
             Console.WriteLine("Pseudo du client : ");
-            string pseudo = Console.ReadLine();
+            string identifiant = Console.ReadLine();
             Console.WriteLine("Mot de passe du client : ");
             string mdp = Console.ReadLine();
             Console.WriteLine("Type de client (Particulier / Entreprise) : ");
             string typeClient = Console.ReadLine();
-
-
-            var client = new Client(nom, adresse, telephone, email, pseudo, mdp, typeClient);
+            string prenom = null;
+            string nomEntreprise = null;
+            string referent = null;
             if (typeClient == "Particulier")
             {
-                Console.WriteLine($"Prénom: ");
-                string prenom = Console.ReadLine();
+                Console.Write("Prénom : ");
+                prenom = Console.ReadLine();
             }
             else if (typeClient == "Entreprise")
             {
-                Console.WriteLine($"Nom Entreprise: ");
-                string nomEntreprise = Console.ReadLine();
-                Console.WriteLine("Référent: ");
-                string referent = Console.ReadLine();
+                Console.Write("Nom entreprise : ");
+                nomEntreprise = Console.ReadLine();
+
+                Console.Write("Référent : ");
+                referent = Console.ReadLine();
             }
 
+            var client = new Client(nom, adresse, telephone, email, identifiant, mdp, typeClient)
+            {
+                Prenom = prenom,
+                NomEntreprise = nomEntreprise,
+                Referent = referent
+            };
+
             gestionClients.AjouterClient(client);
+            gestionClients.clients = gestionClients.GetClients();
             Console.WriteLine("Client ajouté avec succès.");
             PauseEtRetourMenu();
         }
 
+        /// <summary>
+        /// Affiche la liste de tous les clients existants.
+        /// </summary>
         private void AfficherClients()
         {
             gestionClients.AfficherClients();
             PauseEtRetourMenu();
         }
 
+        // <summary>
+        /// Permet de supprimer un client en fonction de son identifiant (pseudo).
+        /// </summary>
+        public void SupprimerClient()
+        {
+            Console.Write("Entrez l'identifiant (pseudo) du client à supprimer : ");
+            string identifiant = Console.ReadLine();
+
+            string query = "DELETE FROM Clients WHERE Identifiant = @Identifiant";
+
+            int lignes = DatabaseManager.ExecuteNonQuery(query,
+                new MySqlParameter("@Identifiant", identifiant));
+
+            if (lignes > 0)
+                Console.WriteLine($"Client '{identifiant}' supprimé avec ses commandes.");
+            else
+                Console.WriteLine("Aucun client trouvé avec cet identifiant.");
+        }
+
+        /// <summary>
+        /// Affiche le menu de gestion des cuisiniers.
+        /// Permet d'ajouter, afficher ou supprimer des cuisiniers.
+        /// </summary>
         private void GérerCuisiniers()
         {
             Console.Clear();
             Console.WriteLine("=== CUISINIERS ===");
             Console.WriteLine("1. Ajouter un cuisinier");
             Console.WriteLine("2. Afficher tous les cuisiniers");
-            Console.WriteLine("3. Retour");
+            Console.WriteLine("3. Supprimer des cuisiniers");
+            Console.WriteLine("4. Retour");
             var choix = Console.ReadLine();
 
             switch (choix)
@@ -180,6 +235,9 @@ namespace Pb_scientifique
                     AfficherCuisiniers();
                     break;
                 case "3":
+                    SupprimerCuisinier();
+                    break;
+                case "4":
                     AfficherMenu();
                     break;
                 default:
@@ -187,24 +245,52 @@ namespace Pb_scientifique
                     break;
             }
         }
-
+        
+        /// <summary>
+        /// Permet d'ajouter un nouveau cuisinier à la base de données.
+        /// </summary>
         private void AjouterCuisinier()
         {
             Console.Clear();
             Console.WriteLine("=== Ajout d'un nouveau cuisinier ===");
 
             Cuisinier cuisinier = gestionCuisiniers.CreerCuisinierPlat();
-            gestionCuisiniers.AjouterCuisinier(cuisinier);
             Console.WriteLine($"Cuisinier ajouté : {cuisinier.Nom} avec succès !");
             PauseEtRetourMenu();
         }
 
+        /// <summary>
+        /// Affiche la liste de tous les cuisiniers existants.
+        /// </summary>
         private void AfficherCuisiniers()
         {
             gestionCuisiniers.AfficherCuisiniers();
             PauseEtRetourMenu();
         }
 
+        /// <summary>
+        /// Supprime un cuisinier de la base de données en fonction de son identifiant.
+        /// </summary>
+        public void SupprimerCuisinier()
+        {
+            Console.Write("Entrez l'identifiant (pseudo) du cuisinier à supprimer : ");
+            string identifiant = Console.ReadLine();
+
+            string query = "DELETE FROM Cuisiniers WHERE Identifiant = @Identifiant";
+
+            int lignes = DatabaseManager.ExecuteNonQuery(query,
+                new MySqlParameter("@Identifiant", identifiant));
+
+            if (lignes > 0)
+                Console.WriteLine($"Cuisinier '{identifiant}' supprimé avec ses plats et commandes associées.");
+            else
+                Console.WriteLine("Aucun cuisinier trouvé avec cet identifiant.");
+        }
+
+        /// <summary>
+        /// Affiche le menu de gestion des commandes.
+        /// Permet de créer ou afficher des commandes.
+        /// </summary>
         private void GérerCommandes()
         {
             Console.Clear();
@@ -231,6 +317,9 @@ namespace Pb_scientifique
             }
         }
 
+        /// <summary>
+        /// Permet de créer une nouvelle commande pour un client.
+        /// </summary>
         private void CreerCommande()
         {
             Console.Write("Entrez votre identifiant de client : ");
@@ -247,7 +336,7 @@ namespace Pb_scientifique
 
             gestionCommandes.CreerCommande(client);
 
-            /*string cheminStations = "MetroParisNoeuds.txt";
+            string cheminStations = "MetroParisNoeuds.txt";
             string cheminLiaisons = "MetroParisArcs.txt";
             graphe.ChargerStationsDepuisFichier(cheminStations);
             graphe.ChargerLiaisonsDepuisFichier(cheminLiaisons);
@@ -277,17 +366,24 @@ namespace Pb_scientifique
             else
             {
                 Console.WriteLine("Impossible de calculer le plus court chemin à cause d'un cycle de poids négatif.");
-            }*/
+            }
 
             PauseEtRetourMenu();
         }
 
+        /// <summary>
+        /// Affiche la liste de toutes les commandes existantes.
+        /// </summary>
         private void AfficherCommandes()
         {
             gestionCommandes.AfficherCommandes();
             PauseEtRetourMenu();
         }
 
+        /// <summary>
+        /// Affiche le menu des statistiques et permet d'afficher les résultats statistiques
+        /// concernant les clients, cuisiniers et commandes.
+        /// </summary>
         private void GérerStatistiques()
         {
             Console.Clear();
@@ -300,7 +396,8 @@ namespace Pb_scientifique
                 Console.WriteLine("2. Plats les plus populaires");
                 Console.WriteLine("3. Nombre moyen de commandes par client");
                 Console.WriteLine("4. Graphe des relations");
-                Console.WriteLine("5. Revenir au menu principal");
+                Console.WriteLine("5. Expotation en XML");
+                Console.WriteLine("6. Revenir au menu principal");
                 Console.Write("\nVotre choix : ");
 
                 switch (Console.ReadLine())
@@ -319,6 +416,12 @@ namespace Pb_scientifique
                         Process.Start("explorer.exe", "relations.png");
                         break;
                     case "5":
+                        var exportateur = new Exportateur();
+                        exportateur.ExporterToutesLesDonnees();
+                        Process.Start("explorer.exe", "relations.png");
+                        Console.WriteLine("données exportées");
+                        break;
+                    case "6":
                         return;
                     default:
                         Console.WriteLine("Option invalide");
@@ -327,6 +430,9 @@ namespace Pb_scientifique
             }
         }
 
+        /// <summary>
+        /// Affiche les chiffres d'affaires par cuisinier.
+        /// </summary>
         private void AfficherChiffreAffaires(Statistiques stats)
         {
             Console.WriteLine("\n=== CHIFFRE D'AFFAIRES PAR CUISINIER ===");
@@ -348,6 +454,9 @@ namespace Pb_scientifique
             PauseEtRetourMenu();
         }
 
+        /// <summary>
+        /// Affiche les plats les plus populaires.
+        /// </summary>
         private void AfficherPlatsPopulaires(Statistiques stats)
         {
             Console.WriteLine("\n=== PLATS LES PLUS POPULAIRES ===");
@@ -369,6 +478,9 @@ namespace Pb_scientifique
             PauseEtRetourMenu();
         }
 
+        /// <summary>
+        /// Affiche la moyenne de commandes effectuées par client.
+        /// </summary>
         private void AfficherMoyenneCommandes(Statistiques stats)
         {
             Console.WriteLine("\n=== MOYENNE DE COMMANDES PAR CLIENT ===");

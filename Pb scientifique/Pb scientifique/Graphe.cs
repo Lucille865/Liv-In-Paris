@@ -10,9 +10,24 @@ namespace Pb_scientifique
 {
     public class Graphe<T>
     {
+        /// <summary>
+        /// Dictionnaire des stations, indexées par leur identifiant.
+        /// </summary>
         public Dictionary<T, Noeud<T>> Noeuds { get; } = new();
+
+        /// <summary>
+        /// Dictionnaire des liaisons entre stations (voisins).
+        /// </summary>
         private Dictionary<T, List<T>> liaisons = new();
 
+        /// <summary>
+        /// Ajoute une station au graphe.
+        /// </summary>
+        /// <param name="id">Identifiant de la station.</param>
+        /// <param name="ligne">Nom de la ligne.</param>
+        /// <param name="nom">Nom de la station.</param>
+        /// <param name="longitude">Coordonnée longitude.</param>
+        /// <param name="latitude">Coordonnée latitude.</param> 
         public void AjouterStation(T id, string ligne, string nom, double longitude, double latitude)
         {
             if (!Noeuds.ContainsKey(id))
@@ -22,6 +37,11 @@ namespace Pb_scientifique
             }
         }
 
+        /// <summary>
+        /// Ajoute une liaison (connexion) entre deux stations.
+        /// </summary>
+        /// <param name="id1">ID de la première station.</param>
+        /// <param name="id2">ID de la deuxième station.</param>
         public void AjouterLiaison(T id1, T id2)
         {
             if (!Noeuds.ContainsKey(id1) || !Noeuds.ContainsKey(id2))
@@ -34,6 +54,10 @@ namespace Pb_scientifique
                 liaisons[id2].Add(id1);
         }
 
+        /// <summary>
+        /// Charge les stations depuis un fichier CSV.
+        /// </summary>
+        /// <param name="chemin">Chemin du fichier CSV des stations.</param>
         public void ChargerStationsDepuisFichier(string cheminStations)
         {
             if (!File.Exists(cheminStations))
@@ -54,6 +78,10 @@ namespace Pb_scientifique
             }
         }
 
+        /// <summary>
+        /// Charge les liaisons entre stations depuis un fichier CSV.
+        /// </summary>
+        /// <param name="chemin">Chemin du fichier CSV des liaisons.</param>
         public void ChargerLiaisonsDepuisFichier(string cheminFichier)
         {
             if (!File.Exists(cheminFichier))
@@ -73,6 +101,9 @@ namespace Pb_scientifique
             }
         }
 
+        /// <summary>
+        /// Affiche les informations de toutes les stations.
+        /// </summary>
         public void AfficherStations()
         {
             foreach (var station in Noeuds.Values)
@@ -81,6 +112,9 @@ namespace Pb_scientifique
             }
         }
 
+        /// <summary>
+        /// Affiche les connexions entre les stations.
+        /// </summary>
         public void AfficherLiaisons()
         {
             foreach (var liaison in liaisons)
@@ -88,6 +122,12 @@ namespace Pb_scientifique
                 Console.WriteLine($"Station {liaison.Key} ({Noeuds[liaison.Key].Nom}) connectée à : {string.Join(", ", liaison.Value.Select(id => Noeuds[id].Nom))}");
             }
         }
+
+        /// <summary>
+        /// Retourne la liste des voisins (stations connectées) d'une station.
+        /// </summary>
+        /// <param name="id">Identifiant de la station.</param>
+        /// <returns>Liste des identifiants des voisins.</returns>
         public List<T> ObtenirVoisins(T id)
         {
             if (liaisons.ContainsKey(id))
@@ -97,6 +137,11 @@ namespace Pb_scientifique
             return new List<T>(); // Retourne une liste vide si aucun voisin trouvé
         }
 
+        /// <summary>
+        /// Recherche l'identifiant d'une station à partir de son nom.
+        /// </summary>
+        /// <param name="nom">Nom de la station.</param>
+        /// <returns>Identifiant de la station, ou -1 si introuvable.</returns>
         public T TrouverIdParNom(string nomStation)
         {
             foreach (var noeud in Noeuds)

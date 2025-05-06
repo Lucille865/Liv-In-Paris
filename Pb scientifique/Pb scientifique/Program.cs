@@ -11,28 +11,10 @@ namespace Pb_scientifique
         {
             var interfaceApp = new Interface();
 
-            string cheminStations = "MetroParisNoeuds.txt";
-            string cheminLiaisons = "MetroParisArcs.txt";
-
             // Création d'un graphe avec des int comme identifiants de stations
             Graphe<int> graphe = new Graphe<int>();
             //AfficheGraphe<int> image = new AfficheGraphe<int>();
             //image.ChargerDepuisFichier(cheminStations, int.Parse);
-
-            // Chargement des stations depuis le fichier
-            graphe.ChargerStationsDepuisFichier(cheminStations);
-            //Console.WriteLine("Liste des stations chargées :");
-            
-
-
-            // Chargement des liaisons entre les stations depuis le fichier
-            graphe.ChargerLiaisonsDepuisFichier(cheminLiaisons);
-
-
-            // Affichage des informations
-            //graphe.AfficherLiaisons();
-
-
             // Dessiner le graphe
             //image.DessinerGraphe("graphe.png");
             
@@ -50,11 +32,7 @@ namespace Pb_scientifique
             // Afficher le menu initial
             interfaceApp.AfficherMenu();
 
-            string nomRecherche = "Gare du Nord"; // Change avec le nom voulu
-            int idStation = graphe.TrouverIdParNom(nomRecherche);
 
-            Noeud<int> depart = graphe.Noeuds.ContainsKey(idStation) ? graphe.Noeuds[idStation] : null;
-            Noeud<int> arrivee = graphe.Noeuds.ContainsKey(124) ? graphe.Noeuds[124] : null; // Trouver le noeud d'arrivée (ID 203)
 
             /*Djikista
             var dijkstra = new Dijkstra<int>(graphe, depart.Id);

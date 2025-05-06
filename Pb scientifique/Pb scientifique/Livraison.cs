@@ -12,6 +12,7 @@ namespace Pb_scientifique
         public DateTime DateLivraison { get; set; }
         public Plat PlatLivraison { get; set; }
 
+        public Livraison() { }
         public Livraison(string adresseClient, DateTime dateLivraison, Plat platLivraison)
         {
             AdresseClient = adresseClient;

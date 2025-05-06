@@ -10,18 +10,18 @@ namespace Pb_scientifique
     {
       
         public string Nom { get; set; }
-        public string Prenom { get; set; }
         public string Adresse { get; set; }
         public string Telephone { get; set; }
         public string Email { get; set; }
         public string Identifiant { get; set; }
         public string MotDePasse { get; set; }
         public string TypeClient { get; set; } // "Particulier" ou "Entreprise"
-        // Seulement pour les clients particuliers
+        public string Prenom { get; set; } // Seulement pour les clients particuliers
         public string NomEntreprise { get; set; } // Seulement pour les entreprises
         public string Referent { get; set; } // Seulement pour les entreprises
 
-        // Constructeur
+        
+        public Client() { }
         public Client(string nom, string adresse, string telephone, string email, string identifiant, string motDePasse, string typeClient)
         {
             Nom = nom;

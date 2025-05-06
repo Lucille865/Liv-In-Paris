@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Pb_scientifique
 {
+    /// <summary>
+    /// Représente un cuisinier qui propose des plats et effectue des livraisons.
+    /// </summary>
     public class Cuisinier
     {
         public string Nom { get; set; }
@@ -17,6 +20,7 @@ namespace Pb_scientifique
         public List<Plat> Plats { get; set; } = new List<Plat>();
         public List<Livraison> Livraisons { get; set; } = new List<Livraison>();
 
+        public Cuisinier() { }
         public Cuisinier(string nom, string adresse, string telephone, string email, string identifiant, string motDePasse)
         {
             Nom = nom;
@@ -25,9 +29,11 @@ namespace Pb_scientifique
             Email = email;
             Identifiant = identifiant;
             MotDePasse = motDePasse;
-            Plats = new List<Plat>();
         }
 
+        /// <summary>
+        /// Ajoute un plat au menu du cuisinier si ce n’est pas déjà le cas.
+        /// </summary>
         public void AjouterPlat(Plat plat)
         {
             if (!Plats.Any(p => p.Nom == plat.Nom))
@@ -41,19 +47,25 @@ namespace Pb_scientifique
             }
         }
 
-        // Afficher les informations de base du cuisinier
+        /// <summary>
+        /// Affiche les informations personnelles du cuisinier.
+        /// </summary>
         public void AfficherInformations()
         {
             Console.WriteLine($"Nom: {Nom}, Adresse: {Adresse}, Téléphone: {Telephone}, Email: {Email}");
         }
 
-        // Afficher le nombre de livraisons effectuées
+        /// <summary>
+        /// Affiche le nombre de livraisons effectuées par le cuisinier.
+        /// </summary>
         public void AfficherLivraisons()
         {
             Console.WriteLine($"Nombre de livraisons effectuées : {Livraisons.Count}");
         }
 
-        // Afficher les plats du cuisinier par fréquence
+        /// <summary>
+        /// Affiche les plats triés par fréquence de préparation.
+        /// </summary>
         public void AfficherPlatsParFrequence()
         {
             var platsFrequent = Plats.GroupBy(p => p.Nom).OrderByDescending(g => g.Count()).ToList();
@@ -64,7 +76,9 @@ namespace Pb_scientifique
             }
         }
 
-        // Afficher le plat du jour
+        /// <summary>
+        /// Affiche le plat du jour (le premier plat de la liste).
+        /// </summary>
         public void AfficherPlatDuJour()
         {
             var platDuJour = Plats.FirstOrDefault();
@@ -76,13 +90,6 @@ namespace Pb_scientifique
             {
                 Console.WriteLine("Aucun plat du jour.");
             }
-        }
-
-        // Calculer le plus court chemin pour la livraison d'un plat
-        public string CalculerCheminLivraison(string adresseClient)
-        {
-            // Logique simplifiée pour le calcul de chemin (à implémenter en fonction des lignes de métro ou d'autres critères)
-            return $"Le chemin entre {Adresse} et {adresseClient} doit être calculé.";
         }
     }
 }

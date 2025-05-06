@@ -11,7 +11,11 @@ namespace Pb_scientifique
         private readonly Graphe<T> graphe;
         private Dictionary<T, double> distances;
         private Dictionary<T, T> predecesseurs;
-
+        
+        /// <summary>
+        /// Initialise une nouvelle instance de l'algorithme de Bellman-Ford pour un graphe donné.
+        /// </summary>
+        /// <param name="graphe">Le graphe sur lequel effectuer les calculs de plus court chemin.</param>
         public BellmanFord(Graphe<T> graphe)
         {
             this.graphe = graphe;
@@ -19,6 +23,11 @@ namespace Pb_scientifique
             predecesseurs = new Dictionary<T, T>();
         }
 
+        /// <summary>
+        /// Exécute l'algorithme de Bellman-Ford à partir d'un nœud de départ.
+        /// </summary>
+        /// <param name="depart">Le nœud de départ.</param>
+        /// <returns>
         public bool CalculerPlusCourtChemin(T depart)
         {
             // Initialisation : toutes les distances à l'infini sauf le départ
@@ -63,6 +72,11 @@ namespace Pb_scientifique
             return true;
         }
 
+        /// <summary>
+        /// Reconstruit le chemin le plus court trouvé vers un nœud d’arrivée donné.
+        /// </summary>
+        /// <param name="arrivee">Le nœud de destination.</param>
+        /// <returns>Une liste des identifiants des nœuds constituant le chemin (dans l'ordre du départ à l'arrivée).</returns>
         public List<T> GetChemin(T arrivee)
         {
             List<T> chemin = new();
@@ -78,7 +92,12 @@ namespace Pb_scientifique
             return chemin;
         }
 
-        public Dictionary<T, double> Distances => distances;
+
+
+   ///<summary>
+    /// Retourne les distances calculées depuis le nœud de départ vers tous les autres nœuds.
+    /// </summary>
+    public Dictionary<T, double> Distances => distances;
     }
 
 }
