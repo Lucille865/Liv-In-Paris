@@ -368,9 +368,10 @@ namespace Pb_scientifique
                 Console.WriteLine("1. Chiffre d'affaires par cuisinier");
                 Console.WriteLine("2. Plats les plus populaires");
                 Console.WriteLine("3. Nombre moyen de commandes par client");
-                Console.WriteLine("4. Graphe des relations");
-                Console.WriteLine("5. Exportation en XML");
-                Console.WriteLine("6. Revenir au menu principal");
+                Console.WriteLine("4. Afficher le graphe des stations");
+                Console.WriteLine("5. Graphe des relations");
+                Console.WriteLine("6. Exportation en XML");
+                Console.WriteLine("7. Revenir au menu principal");
                 Console.Write("\nVotre choix : ");
 
                 switch (Console.ReadLine())
@@ -385,16 +386,21 @@ namespace Pb_scientifique
                         AfficherMoyenneCommandes(statistiques);
                         break;
                     case "4":
+                        var graphe = new AfficheGraphe<int>();
+                        graphe.ChargerDepuisFichier("MetroParisNoeuds.txt", "MetroParisArcs.txt", int.Parse);
+                        graphe.DessinerGraphe("metro.png");
+                        break;
+                    case "5":
                         visualiseur.GenererGrapheComplet(gestionCommandes.GetCommandes());
                         Process.Start("explorer.exe", "relations.png");
                         break;
-                    case "5":
+                    case "6":
                         var exportateur = new Exportateur();
                         exportateur.ExporterToutesLesDonnees();
                         Process.Start("explorer.exe", "relations.png");
                         Console.WriteLine("Données exportées");
                         break;
-                    case "6":
+                    case "7":
                         return;
                     default:
                         Console.ForegroundColor = ConsoleColor.Red;
