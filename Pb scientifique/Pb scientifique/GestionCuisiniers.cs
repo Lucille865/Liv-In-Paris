@@ -456,7 +456,7 @@ namespace Pb_scientifique
         new MySqlParameter("@Telephone", nouveauCuisinier.Telephone),
         new MySqlParameter("@Email", nouveauCuisinier.Email),
         new MySqlParameter("@MotDePasse", nouveauCuisinier.MotDePasse),
-        new MySqlParameter("@Pseudo", identifiant)
+        new MySqlParameter("@Identifiant", identifiant)
     };
 
             DatabaseManager.ExecuteNonQuery(query, parameters.ToArray());

@@ -863,11 +863,11 @@ namespace Pb_scientifique
                     PauseEtRetourMenu();
                     break;
                 case "3":
-                    var commande = new Commande(new Client(), new Cuisinier()); // Exemple de commande
+                    var commande = new Commande(new Client(), new Cuisinier()); 
                     commande.Date = DateTime.Now.AddMinutes(-90); // Exemple: commande passée il y a 90 minutes
-                    commande.Statut = "En attente"; // Statut de la commande
+                    commande.Statut = "En attente"; 
                     // Vérification du retard avec un délai de livraison de 2 heures
-                    string resultat = autre.VerifierRetard(commande, TimeSpan.FromHours(2)); // Spécification du délai de 2h
+                    string resultat = autre.VerifierRetard(commande, TimeSpan.FromHours(2)); 
                     Console.WriteLine(resultat);
                     PauseEtRetourMenu();
                     break;
