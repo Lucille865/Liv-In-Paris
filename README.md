@@ -47,8 +47,8 @@ L'accès s'effectue de manière sécurisée en C# pour permettre une persistance
 
 ### 1. Cloner le projet
 ```bash
-git clone [https://github.com/Lucille865/Pb-scientifique.git](https://github.com/Lucille865/Pb-scientifique.git)
-cd Pb-scientifique
+git clone [https://github.com/Lucille865/Liv-in-Paris.git](https://github.com/Lucille865/Liv-in-Paris.git)
+cd Liv-in-Paris
 ```
 
 ### 2. Restaurer les dépendances
