@@ -14,7 +14,7 @@ L'application intègre une architecture orientée objet complète, une base de d
 * **Gestion CRUD complète :** Ajout, modification et suppression sécurisée des Cuisiniers, Clients et Commandes.
 * **Calcul d'itinéraire optimal :** Recherche du chemin le plus court entre les stations de métro du cuisinier et du client.
 * **Coloration de Graphes :** Analyse structurelle des relations clients-cuisiniers (graphe biparti et planaire).
-* **Interopérabilité :** Module d'exportation complet des bilans et des données au format XML et JSON.
+* **Interopérabilité des données :** Module d'exportation complet des bilans et des données au format XML et JSON.
 * **Visualisation Graphique :** Affichage du réseau de métro avec une coloration dynamique par ligne et tracé du meilleur chemin.
 
 ---
@@ -76,4 +76,21 @@ Le choix architectural s'est porté sur l'algorithme de Bellman-Ford pour plusie
 * **Évolutivité :** Permet d'intégrer facilement de futures changements de poids (temps, correspondances, trafic) sans altérer la logique centrale de l'algorithme. 
 
 
+---
+
+## Théorie des Graphes & Coloration
+
+Le projet exploite les concepts de la théorie des graphes à deux niveaux distincts:
+
+### 1. Réseau de Transport
+Modélisation des stations sous forme de nœuds pondérés géographiquement (Latitude/Longitude via la formule de Haversine).
+
+* Implémentation de l'affichage complet des stations de métro et coloration dynamique des lignes pour un rendu visuel clair du réseau.
+
+<img width="1314" height="786" alt="Capture d&#39;écran 2026-06-02 192111" src="https://github.com/user-attachments/assets/6df399a2-0615-473d-800e-8d670509f652" />
+
+### 2. Coloration des Relations
+Application de l'algorithme de **Welsh-Powell** sur le graphe non orienté représentant les interactions commerciales et historiques entre clients et cuisiniers.
+* **Nombre chromatique :** Détermination du nombre minimal de couleurs pour segmenter le réseau.
+* **Analyse structurelle :** Validation mathématique des propriétés du graphe pour déterminer s'il est biparti ou planaire. Cela permet d'identifier l'indépendance de certains profils d'utilisateurs.
 
